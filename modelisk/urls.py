@@ -18,15 +18,15 @@ from django.contrib import admin
 
 # Use include() to add URLS from the catalog application and authentication system
 from django.urls import include
+from django.views.generic import RedirectView
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-]
-
-
-urlpatterns += [
-    path('catalog/', include('catalog.urls')),
+    path("admin/", admin.site.urls),
+    path("home/", include("analysis_overview.urls")),
+    path("insurance-contract/", include("insurance_contract.urls")),
+    path("experience-analysis/", include("experience_analysis.urls")),
+    path("", RedirectView.as_view(url="home/", permanent=True)),
 ]
 
 
@@ -36,14 +36,6 @@ from django.conf.urls.static import static
 
 
 urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-
-#Add URL maps to redirect the base URL to our application
-from django.views.generic import RedirectView
-urlpatterns += [
-    path('', RedirectView.as_view(url='/catalog/', permanent=True)),
-]
-
 
 
 #Add Django site authentication urls (for login, logout, password management)
