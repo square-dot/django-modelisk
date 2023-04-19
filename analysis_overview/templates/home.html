@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Insurance Risk Modeling{% endblock %}
+
+{% block content %}
+<h1>Welcome to Insurance Risk Modeling</h1>
+<p>This website provides tools for modeling insurance risks.</p>
+
+<h2>Links:</h2>
+<ul>
+    <li><a href="{% url 'create_contract' %}">Define an Insurance Contract</a></li>
+    <li><a href="{% url 'experience_analysis' %}">Chain Ladder Method Analysis</a></li>
+</ul>
+{% endblock %}

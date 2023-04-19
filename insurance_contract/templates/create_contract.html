@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Insurance Contract</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if form.active_form %}
+        {{ form.active_form.as_p }}
+    {% else &}
+        <p>I expected something else</p>
+    {% endif %}
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
