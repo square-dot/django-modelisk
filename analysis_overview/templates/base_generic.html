@@ -5,11 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/Simple.css' %}">
-    {% block more_head %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/modelisk.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@12.3/dist/handsontable.full.min.js"></script>
+    <link type="text/css" rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/handsontable@12.3/dist/handsontable.full.min.css" />
+    <script type="text/javascript" src="{% static 'js/grid_experience_analysis.js' %}"></script>
 </head>
 
-<body>
+<body {% block onload%}{% endblock %}>
     <nav>
         <ul>
             <li><a href="{% url 'home' %}">Home</a></li>
@@ -17,7 +20,8 @@
             <li><a href="#">...</a></li>
         </ul>
     </nav>
-    <section>
+    <main>
         {% block content %}{% endblock %}
-    </section>
+    </main>
+
 </html>

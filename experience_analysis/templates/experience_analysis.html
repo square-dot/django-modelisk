@@ -1,31 +1,12 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base_generic.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %}</title>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@12.3/dist/handsontable.full.min.js"></script>
-    <link type="text/css" rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/handsontable@12.3/dist/handsontable.full.min.css" />
-    <script type="text/javascript" src="{% static 'js/grid_experience_analysis.js' %}"></script>
-</head>
+{% block more_head %}
+{% endblock %}
 
-<body onload="openGrid()">
-    <header>
-        <!-- Add your header content here -->
-    </header>
-    <nav>
-        <!-- Add your navigation bar content here -->
-    </nav>
-    <main>
-        <h1>Experience Analysis</h1>
-        
-        <div id="input_grid" class="hot "></div>
-    </main>
-    <footer>
-        <!-- Add your footer content here -->
-    </footer>
-</body>
+{% block onload %}onload="openGrid()"{% endblock %}
+{% block content %}
 
-</html>
+<h2>Experience Analysis</h2>
+<div id="input_grid" class="hot "></div>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-<h1>Insurance Contract</h1>
+<h2>Create a contract</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
