@@ -31,7 +31,7 @@ class ContractCreation():
                                 (650, 20, 15, (1, 1, 0.5), (datetime.date(2020, 1, 1), datetime.date(2020, 12, 31), 1, 10000, 1000, 0.5),))):
             a = AdministrativeInformation.objects.create(insured=t[0])
             p = Premium.objects.create(premium=t[1][0])
-            e = Expenses.objects.create(commission=t[1][1], brokerage=t[1][2])
+            e = Expenses.objects.create(upfront_commission=t[1][1], upfront_brokerage=t[1][2])
             c = QuotaShare(start_date=t[1][4][0], end_date=t[1][4][1], participation=t[1][4][2], share=t[1][4][5])
             Contract.objects.create(administrative_information=a, premium=p, expenses=e, coverage=c)
 

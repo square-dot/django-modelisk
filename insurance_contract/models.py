@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 
 class Country(models.Model):
     iso_code_3 = models.CharField(max_length=3, validators=[RegexValidator(r'^\w{3}$', 'Must be exactly 3 characters')])
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, default="no_name")
 
 
 class Insured(models.Model):
@@ -63,9 +63,14 @@ class Expenses(models.Model):
     upfront_brokerage = models.FloatField()
     upfront_commission = models.FloatField()
 
+    @staticmethod
+    def default():
+        e = Expenses(upfront_commission=0, upfront_brokerage=0)
+        e.save()
+
 
 class Contract(models.Model):
     administrative_information = models.ForeignKey(AdministrativeInformation, on_delete=models.CASCADE)
     premium = models.ForeignKey(Premium, on_delete=models.CASCADE)
     expenses = models.ForeignKey(Expenses, on_delete=models.CASCADE)
-    coverage = models.ForeignKey(Coverage, on_delete=models.PROTECT)
+    coverage = models.ForeignKey(Coverage, on_delete=models.CASCADE)
