@@ -5,7 +5,6 @@ def create_contract(request):
     if request.method == 'POST':
         form = ContractForm(request.POST)
         if form.is_valid():
-            form.save()
             return redirect('contracts')
     else:
         form = ContractForm()

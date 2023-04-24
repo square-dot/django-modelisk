@@ -5,52 +5,67 @@ from django.core.validators import RegexValidator
 
 class Country(models.Model):
     iso_code_3 = models.CharField(max_length=3, validators=[RegexValidator(r'^\w{3}$', 'Must be exactly 3 characters')])
+    name = models.CharField(max_length=256)
 
 
 class Insured(models.Model):
-    uuid = models.UUIDField()
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=256)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
 
-class ContractAdminInfo(models.Model):
+class AdministrativeInformation(models.Model):
     insured = models.ForeignKey(Insured, on_delete=models.CASCADE)
+
+
+class ContractType(models.Model):
+    TYPES = (("QS", "Quota Share"), ("XL_Risk", "Excess Of Loss Risk"), ("XL_Event", "Excess Of Loss Event"),)
+    type = models.CharField(
+        max_length=32,
+        choices=TYPES,
+        blank=True,
+        default="QS",
+        help_text="Type of contract",
+    )
 
 
 class Reinstatement(models.Model):
     premium_percentage = models.FloatField()
 
 
-class ContractCoverageInfo(PolymorphicModel):
-    policy_start_date = models.DateField()
-    policy_end_date = models.DateField()
-    participation = models.FloatField()
+class Coverage(models.Model):
+    start_date = models.DateField()
+    end_date = models.DateField()
+    participation = models.FloatField(help_text="percentage share acquired")
 
 
-class ExcessOfLossEvent(ContractCoverageInfo):
-    retention = models.FloatField()
-    limit = models.FloatField(null=True)
-    aggregate_retention = models.FloatField(null=True)
-    reinstatements = models.ManyToManyField(Reinstatement)
-
-    
-class ExcessOfLossRisk(ContractCoverageInfo):
-    retention = models.FloatField()
-    limit = models.FloatField(null=True)
-    aggregate_retention = models.FloatField(null=True)
+class ExcessOfLoss(Coverage):
+    risk_retention = models.FloatField()
+    risk_limit = models.FloatField(null=True)
+    event_retention = models.FloatField()
+    event_limit = models.FloatField(null=True)
+    aggregate_retention = models.FloatField()
+    aggregate_limit = models.FloatField(null=True)
     reinstatements = models.ManyToManyField(Reinstatement)
 
 
-class QuotaShare(models.Model):
+class QuotaShare(Coverage):
     share = models.FloatField(default=1)
 
     def __str__(self):
         return "Quota Share " + "{:.2f}%".format(self.share * 100)
 
 
-def get_default_qs():
-        return QuotaShare()
+class Premium(models.Model):
+    upfront_premium = models.FloatField()
+
+
+class Expenses(models.Model):
+    upfront_brokerage = models.FloatField()
+    upfront_commission = models.FloatField()
+
 
 class Contract(models.Model):
-    insured = models.CharField(max_length=256, default="default_insured")
-    coverage_info = models.ForeignKey(QuotaShare, on_delete = models.CASCADE, default=get_default_qs)
+    administrative_information = models.ForeignKey(AdministrativeInformation, on_delete=models.CASCADE)
+    premium = models.ForeignKey(Premium, on_delete=models.CASCADE)
+    expenses = models.ForeignKey(Expenses, on_delete=models.CASCADE)
+    coverage = models.ForeignKey(Coverage, on_delete=models.PROTECT)
