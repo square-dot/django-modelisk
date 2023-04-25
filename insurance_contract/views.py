@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
-from .forms import ContractForm
-from .models import Contract
+from django.shortcuts import redirect, render
 from django.views.generic import ListView
+
+from .forms import ContractForm
+from .models import Contract, Company
+
 
 def create_contract(request):
     if request.method == 'POST':
@@ -16,3 +18,9 @@ def create_contract(request):
 class ContractsListView(ListView):
     model = Contract
     paginate_by = 20
+    ordering = ["administrative_information", ]
+
+class CompaniesListView(ListView):
+    model = Company
+    paginate_by = 20
+    ordering = ["name", ]
