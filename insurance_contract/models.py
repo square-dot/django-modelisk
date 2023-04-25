@@ -4,6 +4,7 @@ from django.core.validators import RegexValidator
 from datetime import date
 from django.db.models.functions import Lower
 import random
+from django.urls import reverse
 
 
 class Country(models.Model):
@@ -26,6 +27,9 @@ class Company(models.Model):
     
     def __str__(self) -> str:
         return self.__repr__()
+    
+    def get_absolute_url(self):
+        return reverse("company-detail", args=[str(self.pk)])
     
     class Meta:
         constraints = [ models.UniqueConstraint(Lower("name"), name="unique_lower_company_name")]
@@ -140,12 +144,27 @@ class Contract(models.Model):
     expenses = models.OneToOneField(Expenses, on_delete=models.CASCADE)
     coverage = models.OneToOneField(Coverage, on_delete=models.CASCADE)
 
+    def get_absolute_url(self):
+        return reverse("contract-detail", args=[str(self.pk)])
+
     @staticmethod
     def default_name(coverage, insured_name:str):
-        return f"{coverage.type_name()} " + insured_name
+        return f"{coverage.type_name()} - " + insured_name
 
     def __repr__(self) -> str:
         return self.administrative_information.__repr__() + " " + self.coverage.__repr__()
     
     def __str__(self) -> str:
         return self.__repr__()
+    
+    def name(self):
+        return self.administrative_information.name
+    
+    def start_date(self):
+        return self.coverage.start_date
+    
+    def end_date(self):
+        return self.coverage.end_date
+    
+    def insured(self):
+        return self.administrative_information.insured

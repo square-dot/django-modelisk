@@ -15,9 +15,9 @@
     <tbody>
         {% for contract in contract_list %}
         <tr>
-            <td><a href="{{ contract.get_absolute_url }}">{{ contract.administrative_information.name }}</a></td>
-            <td>{{ contract.administrative_information.insured }}</td>
-            <td>{{ contract.coverage }}</td>
+            <td><a href="{{ contract.get_absolute_url }}">{{ contract.name }}</a></td>
+            <td><a href="{{ contract.insured.get_absolute_url }}">{{ contract.insured }}</a></td>
+            <td>{{ contract.coverage.type_name }}</td>
             <td>{{ contract.coverage.start_date }} - {{ contract.coverage.end_date }}</td>
         </tr>
         {% endfor %}

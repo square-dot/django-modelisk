@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from .forms import ContractForm
 from .models import Contract, Company
@@ -13,7 +13,14 @@ def create_contract(request):
     else:
         form = ContractForm()
 
-    return render(request, 'create_contract.html', {'form': form})
+    return render(request, 'insurance_contract/create_contract.html', {'form': form})
+
+class ContractDetailView(DetailView):
+    model = Contract
+    template_name = 'insurance_contract/contract_detail.html'
+
+class CompanyDetailView(DetailView):
+    model = Company
 
 class ContractsListView(ListView):
     model = Contract
