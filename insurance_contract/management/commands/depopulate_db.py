@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from insurance_contract.syntethic_data import ContractsCreation
+from insurance_contract.synthetic_data.data_creation import ContractsCreation
 
 class Command(BaseCommand):
     help = 'Delete all data from the database'

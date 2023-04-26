@@ -1,9 +1,7 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
 from django.core.validators import RegexValidator
-from datetime import date
 from django.db.models.functions import Lower
-import random
 from django.urls import reverse
 
 
@@ -30,6 +28,9 @@ class Company(models.Model):
     
     def get_absolute_url(self):
         return reverse("company-detail", args=[str(self.pk)])
+    
+    def get_fields(self):
+        return [("Name", self.name), ("Country", self.country.name)]
     
     class Meta:
         constraints = [ models.UniqueConstraint(Lower("name"), name="unique_lower_company_name")]
@@ -168,3 +169,14 @@ class Contract(models.Model):
     
     def insured(self):
         return self.administrative_information.insured
+    
+    def get_fields(self):
+        return [("Name", self.name()),
+                ("Type", self.coverage.type_name()),
+                ("Start date", self.start_date()),
+                ("End date", self.end_date()),
+                ("Insured", self.insured()),
+                ("Premium", self.premium.upfront_premium),
+                ("Brokerage", self.expenses.upfront_brokerage),
+                ("Commission", self.expenses.upfront_commission),
+                ]

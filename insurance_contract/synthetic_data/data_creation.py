@@ -1,6 +1,7 @@
 from insurance_contract.models import (Country, Company, AdministrativeInformation,
                                         Premium, Expenses, Contract, QuotaShare, ExcessOfLoss)
 from insurance_contract.models import ContractType
+from insurance_name_generator import test_insurance_name_generator
 import datetime
 import random
 import math
@@ -60,26 +61,6 @@ class ContractsCreation():
         for c in (Country, Company, AdministrativeInformation, Premium, Expenses, Contract, QuotaShare, ExcessOfLoss):
             c.objects.all().delete()
 
-
-def test_insurance_name_generator():
-    type = ("Insurance", "Insurance Company", "Insurance Society", "Mutual",
-            "Mutual Insurers", "Insurance Co.", "Assurance Co.", "Insurance Group",
-            "Insurance Department", "Union", "Mutual Group", "Capital", "Insurance")
-    name = ("Lifeline", "The Bernadelli", "Indursky & Sons", "Varnelle", "Schneiber", "Pleister", "LLPT", 
-            "Ronald Wilkes", "Brown Star", "Liberty", "ROC", "PK Lines", "Wildies", "Rookstar", "Pence",
-            "Breighton", "Pell", "UTR", "PkW", "Von Merten", "Merton", "Skylar", "Bersell", "Finpars", "P&T",
-            "Beler", "Prestons", "Flirsing Barles", "Los Bueros", "Würthly", "Amar Sen", "Fessari", "Murdelle",
-            "Bührlens", "Presos do Soto", "Mitzuro Yabashi", "Parandanan", "Samsang", "Prizlet Heirs", "KKTP")
-    single_name = ("Insuritas", "Assurelines", "Insuricare", "Umbrellife", "Assuricare", "Mutualmotor",
-                    "Brolife", "Gercare", "Brassurance")
-    if random.random() < 0.02:
-        return random.choice(single_name)
-    if random.random() < 0.1:
-        return random.choice(name)
-    if random.random() < 0.3:
-        cc = random.sample(name, 2)
-        return cc[0] + " & " + cc[1] + " " + random.choice(type)
-    return random.choice(name) + " " + random.choice(type)
 
 def test_contract_number_generator(magnitude = 1000) -> tuple:
     premium = max(round(random.normalvariate(mu = magnitude, sigma = magnitude / 4), 2), 0)

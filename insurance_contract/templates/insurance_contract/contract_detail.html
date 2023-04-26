@@ -6,8 +6,12 @@
 <p>{{ contract.start_date }} - {{ contract.end_date }}</a></p>
 
 
-<div style="margin-left:20px;margin-top:20px">
-    <hr>
-    <a href="{{ contract.insured.get_absolute_url }}">{{ contract.insured.name }}</a>
-</div>
+<table>
+    {% for label, value in object.get_fields %}
+        <tr>
+            <td>{{ label }}</td>
+            <td>{{ value }}</td>
+        </tr>
+    {% endfor %}
+</table>
 {% endblock %}

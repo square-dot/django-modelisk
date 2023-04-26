@@ -3,8 +3,12 @@
 {% block content %}
 <h1>Company: {{ company.name }}</h1>
 
-<div style="margin-left:20px;margin-top:20px">
-    <hr>
-    <a href="#">{{ company.name }}</a>
-</div>
+<table>
+    {% for label, value in object.get_fields %}
+        <tr>
+            <td>{{ label }}</td>
+            <td>{{ value }}</td>
+        </tr>
+    {% endfor %}
+</table>
 {% endblock %}
