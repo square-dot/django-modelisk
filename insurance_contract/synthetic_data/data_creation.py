@@ -1,6 +1,5 @@
 from insurance_contract.models import (Country, Company, AdministrativeInformation,
                                         Premium, Expenses, Contract, QuotaShare, ExcessOfLoss)
-from insurance_contract.models import ContractType
 from insurance_name_generator import test_insurance_name_generator
 import datetime
 import random
@@ -44,7 +43,7 @@ class ContractsCreation():
         for i in range(nr):
             magnitude = random.choice((1000, 4000, 10000, 38000, 100000))
             v = test_contract_number_generator(magnitude)
-            c = test_coverage_generator(random.choice((ContractType("QS"), ContractType("XL_Risk"), ContractType("XL_Event"))), magnitude=magnitude)
+            c = test_coverage_generator(random.choice(("QS", "XL_Risk", "XL_Event")), magnitude=magnitude)
             e = Expenses.objects.create(upfront_brokerage=v[1], upfront_commission=v[2])
             p = Premium.objects.create(upfront_premium=v[0])
             i = random.choice(insureds)
@@ -70,19 +69,19 @@ def test_contract_number_generator(magnitude = 1000) -> tuple:
     return (premium, brokerage, commission, participation)
 
 
-def test_coverage_generator(contract_type:ContractType, magnitude=1000):
-    if contract_type.is_quota_share():
+def test_coverage_generator(contract_type:str, magnitude=1000):
+    if contract_type == "QS":
         return QuotaShare.objects.create(start_date = datetime.date(2020,1,1),
                                         end_date = datetime.date(2020, 12,31), 
                                         participation = max(0, round(random.random(), 2)),
                                         share=max(round(random.random(),4),0))
-    if contract_type.type == "XL_Risk":
+    if contract_type == "XL_Risk":
         return ExcessOfLoss.objects.create(start_date = datetime.date(2020,1,1),
                                             end_date = datetime.date(2020, 12,31),
                                             participation = max(0, round(random.random(), 2)),
                                             risk_retention = max(round(random.normalvariate(mu=magnitude*3), -1 * int(math.log(magnitude) - 1)), 0),
                                             risk_limit=max(round(random.normalvariate(mu=magnitude*10), -1 * int(math.log(magnitude) - 1)), 0))
-    if contract_type.type == "XL_Event":
+    if contract_type == "XL_Event":
         return ExcessOfLoss.objects.create(start_date = datetime.date(2020,1,1),
                                             end_date = datetime.date(2020, 12,31),
                                             participation = max(0, round(random.random(), 2)),

@@ -47,25 +47,6 @@ class AdministrativeInformation(models.Model):
         return self.__repr__()
 
 
-class ContractType():
-    TYPES = (("QS", "Quota Share"), ("XL_Risk", "Excess Of Loss Risk"), ("XL_Event", "Excess Of Loss Event"),)
-
-    def __init__(self, type_string):
-        if type_string in [t[0] for t in self.TYPES]:
-            self.type = type_string
-        else:
-            return ValueError(f"{type_string} is not a valid contract type")
-        
-    def __str__(self):
-        return next(t[1] for t in self.TYPES if t[0] == self.type)
-    
-    def is_quota_share(self):
-        return self.type == "QS"
-    
-    def is_excess_of_loss(self):
-        return self.type == "XL_Risk" or self.type == "XL_Event"
-
-
 class Reinstatement(models.Model):
     premium_percentage = models.FloatField()
 
