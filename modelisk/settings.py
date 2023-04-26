@@ -45,9 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "accounts.apps.AccountsConfig",
-    "analysis_overview.apps.AnalysisOverviewConfig",
     "insurance_contract.apps.ContractConfig",
-    "experience_analysis.apps.ExperienceAnalysisConfig",
+    "analysis.apps.AnalysisConfig",
     "polymorphic",
 ]
 
@@ -67,7 +66,7 @@ ROOT_URLCONF = 'modelisk.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'modelisk/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.urls import path
 from django.contrib import admin
+from . import views
+
 
 # Use include() to add URLS from the catalog application and authentication system
 from django.urls import include
@@ -23,9 +25,9 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("home/", include("analysis_overview.urls")),
-    path("insurance-contract/", include("insurance_contract.urls")),
-    path("experience-analysis/", include("experience_analysis.urls")),
+    path("home/", views.home, name="home"),
+    path("insurance_contract/", include("insurance_contract.urls")),
+    path("analysis/", include("analysis.urls")),
     path("", RedirectView.as_view(url="home/", permanent=True)),
 ]
 
