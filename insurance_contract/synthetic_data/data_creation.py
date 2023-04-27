@@ -1,17 +1,30 @@
-from insurance_contract.models import (Country, Company, AdministrativeInformation,
-                                        Premium, Expenses, Contract, QuotaShare, ExcessOfLoss)
-from insurance_name_generator import test_insurance_name_generator
+from insurance_contract.models import (
+    Country,
+    Company,
+    Premium,
+    Expenses,
+    Currency,
+    Contract,
+    QuotaShare,
+    ExcessOfLoss,
+    Program,
+    Reinstatements,
+)
+from insurance_contract.synthetic_data.insurance_name_generator import (
+    test_insurance_name_generator,
+)
 import datetime
 import random
 import math
 
-class ContractsCreation():
 
+class ContractsCreation:
     @staticmethod
     def populate_test_data():
         countries = ContractsCreation.create_countries()
+        currencies = ContractsCreation.create_currencies()
         insureds = ContractsCreation.create_companies(countries)
-        ContractsCreation.create_contracts(insureds)
+        ContractsCreation.create_programs(insureds, currencies)
 
     @staticmethod
     def depopulate_and_repopulate_test_data():
@@ -20,15 +33,36 @@ class ContractsCreation():
 
     @staticmethod
     def create_countries():
-        for t in (("USA", "United States"), ("ITA", "Italy"), ("FRA", "France"), ("GBR", "Great Britain"),
-                    ("GER", "Germany"), ("CHE", "Switzerland"), ("JPN", "Japan")):
+        for t in (
+            ("USA", "United States"),
+            ("ITA", "Italy"),
+            ("FRA", "France"),
+            ("GBR", "Great Britain"),
+            ("GER", "Germany"),
+            ("CHE", "Switzerland"),
+            ("JPN", "Japan"),
+        ):
             Country.objects.create(iso_code_3=t[0], name=t[1])
         return Country.objects.all()
 
     @staticmethod
+    def create_currencies():
+        for t in (
+            ("CHF", "Swiss Franc"),
+            ("USD", "US Dollar"),
+            ("GBP", "British Pound"),
+            ("EUR", "Euro"),
+        ):
+            Currency.objects.create(iso_code_3=t[0], name=t[1])
+        return Currency.objects.all()
+
+    @staticmethod
     def create_companies(countries):
         nr = 50
-        for t in zip([countries[i % len(countries)] for i in range(nr)], [test_insurance_name_generator() for i in range(nr)]):
+        for t in zip(
+            [countries[i % len(countries)] for i in range(nr)],
+            [test_insurance_name_generator() for i in range(nr)],
+        ):
             q = Company.objects.filter(name=t[1])
             if q.count() > 0:
                 Company.objects.create(country=t[0], name=(t[1] + f" ({q.count()})"))
@@ -36,58 +70,123 @@ class ContractsCreation():
                 Company.objects.create(country=t[0], name=t[1])
         return Company.objects.all()
 
-
-    @staticmethod
-    def create_contracts(insureds):
-        nr = 100
-        for i in range(nr):
-            magnitude = random.choice((1000, 4000, 10000, 38000, 100000))
-            v = test_contract_number_generator(magnitude)
-            c = test_coverage_generator(random.choice(("QS", "XL_Risk", "XL_Event")), magnitude=magnitude)
-            e = Expenses.objects.create(upfront_brokerage=v[1], upfront_commission=v[2])
-            p = Premium.objects.create(upfront_premium=v[0])
-            i = random.choice(insureds)
-            a = AdministrativeInformation.objects.create(name = Contract.default_name(c, i.name), insured = i)
-            Contract.objects.create(administrative_information = a,
-                                    premium = p,
-                                    expenses = e,
-                                    coverage = c)   
-        return Contract.objects.all()
-
-
     @staticmethod
     def empty_database():
-        for c in (Country, Company, AdministrativeInformation, Premium, Expenses, Contract, QuotaShare, ExcessOfLoss):
+        for c in (
+            Country,
+            Currency,
+            Company,
+            Premium,
+            Expenses,
+            Contract,
+            QuotaShare,
+            ExcessOfLoss,
+            Program,
+        ):
             c.objects.all().delete()
 
+    @staticmethod
+    def create_premium(magnitude=1000) -> Premium:
+        premium = max(
+            round(random.normalvariate(mu=magnitude, sigma=magnitude / 4), 2), 0
+        )
+        return Premium.objects.create(upfront_premium=premium)
 
-def test_contract_number_generator(magnitude = 1000) -> tuple:
-    premium = max(round(random.normalvariate(mu = magnitude, sigma = magnitude / 4), 2), 0)
-    brokerage = max(round(random.normalvariate(mu = magnitude / 20, sigma = magnitude / 40), 2), 0)
-    commission = max(round(random.normalvariate(mu = magnitude / 30, sigma = magnitude / 60), 2), 0)
-    participation = max(round(random.random(), 4), 0)
-    return (premium, brokerage, commission, participation)
+    @staticmethod
+    def create_expenses(magnitude=1000) -> Expenses:
+        brokerage = max(
+            round(random.normalvariate(mu=magnitude / 20, sigma=magnitude / 40), 2), 0
+        )
+        commission = max(
+            round(random.normalvariate(mu=magnitude / 30, sigma=magnitude / 60), 2), 0
+        )
+        return Expenses.objects.create(
+            upfront_brokerage=brokerage, upfront_commission=commission
+        )
 
+    @staticmethod
+    def create_coverages(contract_type: str, magnitude=1000) -> list:
+        c = []
+        if contract_type == "QS":
+            c.append(
+                QuotaShare.objects.create(
+                    participation=max(0, round(random.random(), 2)),
+                    share=max(round(random.random(), 4), 0),
+                )
+            )
+        if contract_type == "XL_Risk":
+            rounding = -1 * int(math.log(magnitude) - 1)
+            magnitude *= 3
+            a = max(round(random.normalvariate(mu=magnitude), rounding), 0)
+            for _ in range(random.randint(1, 3)):
+                magnitude *= 3
+                b = max(round(random.normalvariate(mu=magnitude), rounding), 0)
+                c.append(
+                    ExcessOfLoss.objects.create(
+                        participation=max(0, round(random.random(), 2)),
+                        risk_retention=a,
+                        risk_limit=b,
+                        reinstatements={},
+                    )
+                )
+                a = b
+        if contract_type == "XL_Event":
+            reinstatements = {1:(1,1), 2:(1,2)}
+            c.append(
+                ExcessOfLoss.objects.create(
+                    participation=max(0, round(random.random(), 2)),
+                    event_retention=max(
+                        round(
+                            random.normalvariate(mu=magnitude * 3),
+                            -1 * int(math.log(magnitude) - 1),
+                        ),
+                        0,
+                    ),
+                    event_limit=max(
+                        round(
+                            random.normalvariate(mu=magnitude * 10),
+                            -1 * int(math.log(magnitude) - 1),
+                        ),
+                        0,
+                    ),
+                    reinstatements=reinstatements,
+                )
+            )
+        return c
 
-def test_coverage_generator(contract_type:str, magnitude=1000):
-    if contract_type == "QS":
-        return QuotaShare.objects.create(start_date = datetime.date(2020,1,1),
-                                        end_date = datetime.date(2020, 12,31), 
-                                        participation = max(0, round(random.random(), 2)),
-                                        share=max(round(random.random(),4),0))
-    if contract_type == "XL_Risk":
-        return ExcessOfLoss.objects.create(start_date = datetime.date(2020,1,1),
-                                            end_date = datetime.date(2020, 12,31),
-                                            participation = max(0, round(random.random(), 2)),
-                                            risk_retention = max(round(random.normalvariate(mu=magnitude*3), -1 * int(math.log(magnitude) - 1)), 0),
-                                            risk_limit=max(round(random.normalvariate(mu=magnitude*10), -1 * int(math.log(magnitude) - 1)), 0))
-    if contract_type == "XL_Event":
-        return ExcessOfLoss.objects.create(start_date = datetime.date(2020,1,1),
-                                            end_date = datetime.date(2020, 12,31),
-                                            participation = max(0, round(random.random(), 2)),
-                                            event_retention = max(round(random.normalvariate(mu=magnitude*3), -1 * int(math.log(magnitude) - 1)), 0),
-                                            event_limit=max(round(random.normalvariate(mu=magnitude*10), -1 * int(math.log(magnitude) - 1)), 0))
+    @staticmethod
+    def create_contracts(currencies:list[Currency]) -> list[Contract]:
+        premium_magnitude = random.choice([10_000 * (3**e) for e in range(10)])
+        coverages = ContractsCreation.create_coverages(
+            random.choice(("QS", "XL_Risk", "XL_Event")), magnitude=premium_magnitude
+        )
+        c = []
+        for coverage in coverages:
+            currency = random.choice(currencies)
+            premium = ContractsCreation.create_premium(magnitude=premium_magnitude)
+            expenses = ContractsCreation.create_expenses(magnitude=premium_magnitude)
+            c.append(
+                Contract.objects.create(
+                    currency=currency,
+                    premium=premium,
+                    expenses=expenses,
+                    coverage=coverage,
+                )
+            )
+        return c
 
-
-
-
+    @staticmethod
+    def create_programs(insureds, currencies):
+        nr = 100
+        for _ in range(nr):
+            contracts = ContractsCreation.create_contracts(currencies)
+            currency = random.choice(currencies)
+            insured = random.choice(insureds)
+            Program.objects.create(
+                insured=insured,
+                currency=currency,
+                start_date=datetime.date(2020, 1, 1),
+                end_date=datetime.date(2020, 12, 31),
+                contracts={key: value.pk for key, value in zip(range(len(contracts)), contracts)},
+            )
+        return Program.objects.all()

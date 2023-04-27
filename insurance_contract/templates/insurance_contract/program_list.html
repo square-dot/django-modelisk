@@ -1,27 +1,30 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>Contracts List</h1>
-{% if contract_list %}
+<h1>Programs List</h1>
+{% if program_list %}
 <table>
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Type of contract</th>
+            <th>Code</th>
+            <th>Insured</th>
+            <th>Validity</th>
         </tr>
     </thead>
     <tbody>
-        {% for contract in contract_list %}
+        {% for program in program_list %}
         <tr>
-            <td><a href="{{ contract.get_absolute_url }}">{{ contract.name }}</a></td>
-            <td>{{ contract.coverage.type_name }}</td>
+            <td><a href="{{ program.get_absolute_url }}">{{ program.code }}</a></td>
+            <td><a href="{{ program.insured.get_absolute_url }}">{{ program.insured }}</a></td>
+            <td>{{ program.start_date }} - {{ program.end_date }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 {% else %}
-<p>There are no contracts.</p>
+<p>There are no programs.</p>
 {% endif %}
+<br>
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}

@@ -1,13 +1,25 @@
 from django.db import models
+from django.db.models import Model, CharField, FloatField, DateField, JSONField
+from django.db.models import ForeignKey, OneToOneField
+from django.db.models import CASCADE
 from polymorphic.models import PolymorphicModel
 from django.core.validators import RegexValidator
 from django.db.models.functions import Lower
 from django.urls import reverse
 
+class Country(Model):
+    iso_code_3 = CharField(max_length=3, validators=[RegexValidator(r'^\w{3}$', 'Must be exactly 3 characters')])
+    name = CharField(max_length=256, default="no_name")
 
-class Country(models.Model):
-    iso_code_3 = models.CharField(max_length=3, validators=[RegexValidator(r'^\w{3}$', 'Must be exactly 3 characters')])
-    name = models.CharField(max_length=256, default="no_name")
+    def __repr__(self) -> str:
+        return self.iso_code_3
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
+class Currency(Model):
+    iso_code_3 = CharField(max_length=3, validators=[RegexValidator(r'^\w{3}$', 'Must be exactly 3 characters')])
+    name = CharField(max_length=256, default="no_name")
 
     def __repr__(self) -> str:
         return self.iso_code_3
@@ -16,9 +28,9 @@ class Country(models.Model):
         return self.__repr__()
 
 
-class Company(models.Model):
-    name = models.CharField(max_length=256)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+class Company(Model):
+    name = CharField(max_length=256)
+    country = ForeignKey(Country, on_delete=CASCADE)
 
     def __repr__(self) -> str:
         return f"{self.name}, [{self.country}]"
@@ -36,25 +48,18 @@ class Company(models.Model):
         constraints = [ models.UniqueConstraint(Lower("name"), name="unique_lower_company_name")]
 
 
-class AdministrativeInformation(models.Model):
-    name = models.CharField(max_length=256, default="no name")
-    insured = models.ForeignKey(Company, on_delete=models.CASCADE)
+class Reinstatements():
+    
+    def __init__(self):
+        self.values = {}
 
-    def __repr__(self) -> str:
-        return self.insured.__repr__()
-
-    def __str__(self) -> str:
-        return self.__repr__()
-
-
-class Reinstatement(models.Model):
-    premium_percentage = models.FloatField()
+    def add_reinstatement(self, size, cost):
+        index = len(self.values) + 1
+        self.values[index] = (size, cost)
 
 
 class Coverage(PolymorphicModel):
-    start_date = models.DateField()
-    end_date = models.DateField()
-    participation = models.FloatField(help_text="percentage share acquired")
+    participation = FloatField(help_text="percentage share acquired")
 
     def __repr__(self) -> str:
         return "should return subclass"
@@ -62,21 +67,18 @@ class Coverage(PolymorphicModel):
     def __str__(self) -> str:
         return self.__repr__()
     
-    def start_end_date(self):
-        return f"{self.start_date} - {self.end_date}"
-    
     def type_name(self):
         return NotImplementedError
 
 
 class ExcessOfLoss(Coverage):
-    risk_retention = models.FloatField(null=True)
-    risk_limit = models.FloatField(null=True)
-    event_retention = models.FloatField(null=True)
-    event_limit = models.FloatField(null=True)
-    aggregate_retention = models.FloatField(null=True)
-    aggregate_limit = models.FloatField(null=True)
-    reinstatements = models.ManyToManyField(Reinstatement)
+    risk_retention = FloatField(null=True)
+    risk_limit = FloatField(null=True)
+    event_retention = FloatField(null=True)
+    event_limit = FloatField(null=True)
+    aggregate_retention = FloatField(null=True)
+    aggregate_limit = FloatField(null=True)
+    reinstatements = JSONField()
 
     def type_name(self):
         return "Excess Of Loss"
@@ -94,7 +96,7 @@ class ExcessOfLoss(Coverage):
         return self.__repr__()
 
 class QuotaShare(Coverage):
-    share = models.FloatField(default=1)
+    share = FloatField(default=1)
 
     def type_name(self):
         return "Quota Share"
@@ -106,13 +108,13 @@ class QuotaShare(Coverage):
         return self.__repr__()
 
 
-class Premium(models.Model):
-    upfront_premium = models.FloatField()
+class Premium(Model):
+    upfront_premium = FloatField()
 
 
-class Expenses(models.Model):
-    upfront_brokerage = models.FloatField()
-    upfront_commission = models.FloatField()
+class Expenses(Model):
+    upfront_brokerage = FloatField()
+    upfront_commission = FloatField()
 
     @staticmethod
     def default():
@@ -120,44 +122,60 @@ class Expenses(models.Model):
         e.save()
 
 
-class Contract(models.Model):
-    administrative_information = models.OneToOneField(AdministrativeInformation, on_delete=models.CASCADE)
-    premium = models.OneToOneField(Premium, on_delete=models.CASCADE)
-    expenses = models.OneToOneField(Expenses, on_delete=models.CASCADE)
-    coverage = models.OneToOneField(Coverage, on_delete=models.CASCADE)
+class Contract(Model):
+    currency = ForeignKey(Currency, on_delete=CASCADE)
+    premium = OneToOneField(Premium, on_delete=CASCADE)
+    expenses = OneToOneField(Expenses, on_delete=CASCADE)
+    coverage = OneToOneField(Coverage, on_delete=CASCADE)
 
     def get_absolute_url(self):
         return reverse("contract-detail", args=[str(self.pk)])
 
-    @staticmethod
-    def default_name(coverage, insured_name:str):
-        return f"{coverage.type_name()} - " + insured_name
-
     def __repr__(self) -> str:
-        return self.administrative_information.__repr__() + " " + self.coverage.__repr__()
+        return f"{self.code()} {self.coverage.__repr__()}"
     
     def __str__(self) -> str:
         return self.__repr__()
     
-    def name(self):
-        return self.administrative_information.name
+    def code(self):
+        return f"CN-{str(self.pk).zfill(5)}"
     
-    def start_date(self):
-        return self.coverage.start_date
-    
-    def end_date(self):
-        return self.coverage.end_date
-    
-    def insured(self):
-        return self.administrative_information.insured
     
     def get_fields(self):
-        return [("Name", self.name()),
+        return [("ID", self.code()),
                 ("Type", self.coverage.type_name()),
-                ("Start date", self.start_date()),
-                ("End date", self.end_date()),
-                ("Insured", self.insured()),
                 ("Premium", self.premium.upfront_premium),
                 ("Brokerage", self.expenses.upfront_brokerage),
                 ("Commission", self.expenses.upfront_commission),
                 ]
+
+class Program(Model):
+    insured = ForeignKey(Company, on_delete=CASCADE)
+    currency = ForeignKey(Currency, on_delete=CASCADE)
+    start_date = DateField()
+    end_date = DateField()
+    contracts = JSONField()
+
+    def get_absolute_url(self):
+        return reverse("program-detail", args=[str(self.pk)])
+
+    def code(self):
+        return f"PN-{str(self.pk).zfill(4)}"
+    
+    def get_contracts(self) -> list[Contract]:
+        contracts_pk = list(self.contracts.values())
+        l = Contract.objects.filter(pk__in=contracts_pk)
+        return list(l)
+
+    def get_fields(self) -> list:
+        contracts = [("", f"{contract.code()} - {contract.coverage.type_name()}") for contract in self.get_contracts()]
+
+        fields = [("ID", self.code()),
+                ("Insured", self.insured),
+                ("Start date", self.start_date),
+                ("End date", self.end_date),
+                ("Currency", self.currency),
+                ("# contracts", len(self.contracts)),
+                ]
+        fields.extend(contracts)
+        return fields

@@ -1,5 +1,5 @@
 from django import forms
-from .models import AdministrativeInformation, Premium, ExcessOfLoss, QuotaShare
+from .models import Premium, ExcessOfLoss, QuotaShare
 
 
 class ContractForm(forms.Form):
@@ -10,12 +10,6 @@ class ContractForm(forms.Form):
     retention = forms.FloatField()
     aggregate_limit = forms.FloatField()
     reinstatements = forms.FloatField()
-
-
-class AdministrativeInformationForm(forms.ModelForm):
-    class Meta:
-        model = AdministrativeInformation
-        fields = '__all__'
 
 
 class PremiumForm(forms.ModelForm):
