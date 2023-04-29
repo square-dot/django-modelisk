@@ -4,8 +4,11 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models import CASCADE
 from polymorphic.models import PolymorphicModel
 from django.core.validators import RegexValidator
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import Lower
 from django.urls import reverse
+
+
 
 class Country(Model):
     iso_code_3 = CharField(max_length=3, validators=[RegexValidator(r'^\w{3}$', 'Must be exactly 3 characters')])
@@ -31,6 +34,7 @@ class Currency(Model):
 class Company(Model):
     name = CharField(max_length=256)
     country = ForeignKey(Country, on_delete=CASCADE)
+    email = CharField(max_length=256, default="")
 
     def __repr__(self) -> str:
         return f"{self.name}, [{self.country}]"
@@ -42,58 +46,72 @@ class Company(Model):
         return reverse("company-detail", args=[str(self.pk)])
     
     def get_fields(self):
-        return [("Name", self.name), ("Country", self.country.name)]
+        return [("Name", self.name), ("Country", self.country.name), ("E-mail", self.email)]
     
     class Meta:
         constraints = [ models.UniqueConstraint(Lower("name"), name="unique_lower_company_name")]
 
 
 class Reinstatements():
-    
-    def __init__(self):
-        self.values = {}
+
+    def __init__(self, dict:dict[int, tuple[float, float]]):
+        self.values = dict
 
     def add_reinstatement(self, size, cost):
         index = len(self.values) + 1
         self.values[index] = (size, cost)
 
 
+
 class Coverage(PolymorphicModel):
     participation = FloatField(help_text="percentage share acquired")
 
-    def __repr__(self) -> str:
-        return "should return subclass"
-
-    def __str__(self) -> str:
-        return self.__repr__()
-    
-    def type_name(self):
-        return NotImplementedError
-
 
 class ExcessOfLoss(Coverage):
-    risk_retention = FloatField(null=True)
-    risk_limit = FloatField(null=True)
-    event_retention = FloatField(null=True)
-    event_limit = FloatField(null=True)
-    aggregate_retention = FloatField(null=True)
-    aggregate_limit = FloatField(null=True)
-    reinstatements = JSONField()
+    risk_retention = FloatField(null=True, default=None)
+    risk_limit = FloatField(null=True, default=None)
+    event_retention = FloatField(null=True, default=None)
+    event_limit = FloatField(null=True, default=None)
+    aggregate_retention = FloatField(null=True, default=None)
+    aggregate_limit = FloatField(null=True, default=None)
+    reinstatements = JSONField(default=dict)
 
-    def type_name(self):
+    def type_name(self) -> str:
         return "Excess Of Loss"
     
-    def limit_retention_string(self):
+    def limit_retention_string(self) -> str:
         if self.risk_retention is not None:
             return "risk retention {:.0f}".format(self.risk_retention)
         return "no risk retention"
 
+    def get_reinstatments(self) -> Reinstatements:
+        reinstatments = Reinstatements({})
+        for r in self.reinstatements:
+            r.add_reinstatement(float(r.value[0]), float(r.value[0]))
+        return reinstatments
         
     def __repr__(self):
-        return self.type_name() + self.limit_retention_string()
+        return self.type_name()
 
     def __str__(self) -> str:
-        return self.__repr__()
+        return self.__repr__() 
+    
+    def get_fields(self) -> list[tuple[str, str]]:
+        l = []
+        if self.risk_retention is not None:
+            l.append(("Risk retention",  "{:_}".format(self.risk_retention)))
+        if self.risk_limit is not None:
+            l.append(("Risk limit",  "{:_}".format(self.risk_limit)))
+        if self.event_retention is not None:
+            l.append(("Event retention",  "{:_}".format(self.event_retention)))
+        if self.event_limit is not None:
+            l.append(("Event limit",  "{:_}".format(self.event_limit)))
+        if self.aggregate_retention is not None:
+            l.append(("Aggregate retention",  "{:_}".format(self.aggregate_retention)))
+        if self.aggregate_limit is not None:
+            l.append(("Aggregate limit",  "{:_}".format(self.aggregate_limit)))
+        return l
+        
 
 class QuotaShare(Coverage):
     share = FloatField(default=1)
@@ -102,10 +120,13 @@ class QuotaShare(Coverage):
         return "Quota Share"
 
     def __repr__(self):
-        return self.type_name() + " {:.0f}%".format(self.share * 100)
+        return self.type_name()
     
     def __str__(self) -> str:
         return self.__repr__()
+    
+    def get_fields(self) -> list[tuple[str, str]]:
+        return [("Share",  "{:.0f}%".format(self.share * 100))]
 
 
 class Premium(Model):
@@ -138,16 +159,17 @@ class Contract(Model):
         return self.__repr__()
     
     def code(self):
-        return f"CN-{str(self.pk).zfill(5)}"
+        return f"C{str(self.pk).zfill(5)}"
     
-    
-    def get_fields(self):
-        return [("ID", self.code()),
+    def get_fields(self) -> list[tuple[str, str]]:
+        fields = [("ID", self.code()),
                 ("Type", self.coverage.type_name()),
                 ("Premium", self.premium.upfront_premium),
                 ("Brokerage", self.expenses.upfront_brokerage),
                 ("Commission", self.expenses.upfront_commission),
                 ]
+        fields.extend(self.coverage.get_fields())
+        return fields
 
 class Program(Model):
     insured = ForeignKey(Company, on_delete=CASCADE)
@@ -160,7 +182,7 @@ class Program(Model):
         return reverse("program-detail", args=[str(self.pk)])
 
     def code(self):
-        return f"PN-{str(self.pk).zfill(4)}"
+        return f"P{str(self.pk).zfill(5)}"
     
     def get_contracts(self) -> list[Contract]:
         contracts_pk = list(self.contracts.values())
@@ -175,7 +197,7 @@ class Program(Model):
                 ("Start date", self.start_date),
                 ("End date", self.end_date),
                 ("Currency", self.currency),
-                ("# contracts", len(self.contracts)),
+                ("Contracts", len(self.contracts)),
                 ]
         fields.extend(contracts)
         return fields

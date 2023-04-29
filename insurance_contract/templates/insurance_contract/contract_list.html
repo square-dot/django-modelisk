@@ -13,7 +13,7 @@
     <tbody>
         {% for contract in contract_list %}
         <tr>
-            <td><a href="{{ contract.get_absolute_url }}">{{ contract.name }}</a></td>
+            <td><a href="{{ contract.get_absolute_url }}">{{ contract }}</a></td>
             <td>{{ contract.coverage.type_name }}</td>
         </tr>
         {% endfor %}

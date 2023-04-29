@@ -8,10 +8,9 @@ from insurance_contract.models import (
     QuotaShare,
     ExcessOfLoss,
     Program,
-    Reinstatements,
 )
 from insurance_contract.synthetic_data.insurance_name_generator import (
-    test_insurance_name_generator,
+    test_insurance_data_generator,
 )
 import datetime
 import random
@@ -19,6 +18,7 @@ import math
 
 
 class ContractsCreation:
+    
     @staticmethod
     def populate_test_data():
         countries = ContractsCreation.create_countries()
@@ -32,7 +32,7 @@ class ContractsCreation:
         ContractsCreation.populate_test_data()
 
     @staticmethod
-    def create_countries():
+    def create_countries() -> list[Country]:
         for t in (
             ("USA", "United States"),
             ("ITA", "Italy"),
@@ -40,10 +40,13 @@ class ContractsCreation:
             ("GBR", "Great Britain"),
             ("GER", "Germany"),
             ("CHE", "Switzerland"),
+            ("SWE", "Sweden"),
+            ("BRA", "Brazil"),
+            ("ESP", "Spain"),
             ("JPN", "Japan"),
         ):
             Country.objects.create(iso_code_3=t[0], name=t[1])
-        return Country.objects.all()
+        return list(Country.objects.all())
 
     @staticmethod
     def create_currencies():
@@ -57,17 +60,10 @@ class ContractsCreation:
         return Currency.objects.all()
 
     @staticmethod
-    def create_companies(countries):
+    def create_companies(countries:list[Country]):
         nr = 50
-        for t in zip(
-            [countries[i % len(countries)] for i in range(nr)],
-            [test_insurance_name_generator() for i in range(nr)],
-        ):
-            q = Company.objects.filter(name=t[1])
-            if q.count() > 0:
-                Company.objects.create(country=t[0], name=(t[1] + f" ({q.count()})"))
-            else:
-                Company.objects.create(country=t[0], name=t[1])
+        for v in test_insurance_data_generator(nr, countries):
+            Company.objects.create(country=next((c for c in countries if c.iso_code_3 == v[0])), name=v[1], email=v[2])
         return Company.objects.all()
 
     @staticmethod
@@ -115,7 +111,7 @@ class ContractsCreation:
                 )
             )
         if contract_type == "XL_Risk":
-            rounding = -1 * int(math.log(magnitude) - 1)
+            rounding = -1 * int(math.log10(magnitude) - 2)
             magnitude *= 3
             a = max(round(random.normalvariate(mu=magnitude), rounding), 0)
             for _ in range(random.randint(1, 3)):
@@ -126,7 +122,6 @@ class ContractsCreation:
                         participation=max(0, round(random.random(), 2)),
                         risk_retention=a,
                         risk_limit=b,
-                        reinstatements={},
                     )
                 )
                 a = b
