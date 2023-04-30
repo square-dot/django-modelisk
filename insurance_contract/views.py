@@ -29,12 +29,36 @@ class CompanyDetailView(DetailView):
 class ContractsListView(ListView):
     model = Contract
     paginate_by = 20
+    context_object_name = "object_list"
+    template_name = "base_list.html"
+
+    def get_context_data(self, **kwargs: any) -> dict[str, any]:
+        context = super().get_context_data(**kwargs)
+        context["object_name"] = "Contract"
+        context["object_plural_name"] = "Contracts"
+        return context
 
 class CompaniesListView(ListView):
     model = Company
     paginate_by = 20
     ordering = ["name", ]
+    context_object_name = "object_list"
+    template_name = "base_list.html"
+
+    def get_context_data(self, **kwargs: any) -> dict[str, any]:
+        context = super().get_context_data(**kwargs)
+        context["object_name"] = "Company"
+        context["object_plural_name"] = "Companies"
+        return context
 
 class ProgramsListView(ListView):
     model = Program
     paginate_by = 20
+    context_object_name = "object_list"
+    template_name = "base_list.html"
+
+    def get_context_data(self, **kwargs: any) -> dict[str, any]:
+        context = super().get_context_data(**kwargs)
+        context["object_name"] = "Program"
+        context["object_plural_name"] = "Programs"
+        return context

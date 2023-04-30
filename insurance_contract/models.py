@@ -37,7 +37,7 @@ class Company(Model):
     email = CharField(max_length=256, default="")
 
     def __repr__(self) -> str:
-        return f"{self.name}, [{self.country}]"
+        return f"{self.name}"
     
     def __str__(self) -> str:
         return self.__repr__()
@@ -45,8 +45,11 @@ class Company(Model):
     def get_absolute_url(self):
         return reverse("company-detail", args=[str(self.pk)])
     
-    def get_fields(self):
+    def get_fields(self) -> list[tuple[str, str]]:
         return [("Name", self.name), ("Country", self.country.name), ("E-mail", self.email)]
+    
+    def get_fields_for_list(self) -> list[tuple[str, str, str]]:
+        return [("Name", self.get_absolute_url(), self.name), ("Country", "", self.country.name), ("E-mail", "", self.email)]
     
     class Meta:
         constraints = [ models.UniqueConstraint(Lower("name"), name="unique_lower_company_name")]
@@ -57,7 +60,7 @@ class Reinstatements():
     def __init__(self, dict:dict[int, tuple[float, float]]):
         self.values = dict
 
-    def add_reinstatement(self, size, cost):
+    def add_reinstatement(self, size, cost) -> None:
         index = len(self.values) + 1
         self.values[index] = (size, cost)
 
@@ -116,7 +119,7 @@ class ExcessOfLoss(Coverage):
 class QuotaShare(Coverage):
     share = FloatField(default=1)
 
-    def type_name(self):
+    def type_name(self) -> str:
         return "Quota Share"
 
     def __repr__(self):
@@ -149,7 +152,7 @@ class Contract(Model):
     expenses = OneToOneField(Expenses, on_delete=CASCADE)
     coverage = OneToOneField(Coverage, on_delete=CASCADE)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("contract-detail", args=[str(self.pk)])
 
     def __repr__(self) -> str:
@@ -158,7 +161,7 @@ class Contract(Model):
     def __str__(self) -> str:
         return self.__repr__()
     
-    def code(self):
+    def code(self) -> str:
         return f"C{str(self.pk).zfill(5)}"
     
     def get_fields(self) -> list[tuple[str, str]]:
@@ -170,6 +173,14 @@ class Contract(Model):
                 ]
         fields.extend(self.coverage.get_fields())
         return fields
+    
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]:
+        return [("ID", self.get_absolute_url(), self.code()),
+                ("Type", "", self.coverage.type_name()),
+                ("Premium", "", self.premium.upfront_premium),
+                ("Brokerage", "", self.expenses.upfront_brokerage),
+                ("Commission", "", self.expenses.upfront_commission),
+                ]
 
 class Program(Model):
     insured = ForeignKey(Company, on_delete=CASCADE)
@@ -184,12 +195,18 @@ class Program(Model):
     def code(self):
         return f"P{str(self.pk).zfill(5)}"
     
+    def __repr__(self) -> str:
+        return f"{self.code()} {self.insured}"
+    
+    def __str__(self) -> str:
+        return self.__repr__()
+    
     def get_contracts(self) -> list[Contract]:
         contracts_pk = list(self.contracts.values())
         l = Contract.objects.filter(pk__in=contracts_pk)
         return list(l)
 
-    def get_fields(self) -> list:
+    def get_fields(self) -> list[tuple[str, str]]:
         contracts = [("", f"{contract.code()} - {contract.coverage.type_name()}") for contract in self.get_contracts()]
 
         fields = [("ID", self.code()),
@@ -200,4 +217,14 @@ class Program(Model):
                 ("Contracts", len(self.contracts)),
                 ]
         fields.extend(contracts)
+        return fields
+    
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]:
+        fields = [("ID",  self.get_absolute_url(), self.code()),
+                ("Insured", self.insured.get_absolute_url(), self.insured),
+                ("Start date", "", self.start_date),
+                ("End date", "", self.end_date),
+                ("Currency", "", self.currency),
+                ("Nr of contracts", "", len(self.contracts)),
+                ]
         return fields

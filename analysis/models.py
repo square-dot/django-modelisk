@@ -25,6 +25,12 @@ class ExposureAnalysis(Model):
                 ("Program", self.program),
                 ]
     
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]:
+        return [("Code", self.get_absolute_url(), self.code()),
+                ("Name", "", self.name),
+                ("Program", self.program.get_absolute_url(), self.program),
+                ]
+    
     def get_absolute_url(self):
         return reverse("exposure-analysis-detail", args=[str(self.pk)])
 
