@@ -16,7 +16,7 @@ class ExposureAnalysisListView(ListView):
     context_object_name = "object_list"
     template_name = "base_list.html"
     
-    def get_context_data(self, **kwargs: any) -> dict[str, any]:
+    def get_context_data(self, **kwargs: any) -> dict[str, any]: # type: ignore
         context = super().get_context_data(**kwargs)
         context["object_name"] = "Exposure Analysis"
         context["object_plural_name"] = "Exposure Analysis"
