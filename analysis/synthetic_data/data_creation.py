@@ -9,7 +9,7 @@ from insurance_contract.models import (
     ExcessOfLoss,
     Program,
 )
-from insurance_contract.synthetic_data.insurance_name_generator import (
+from analysis.synthetic_data.insurance_name_generator import (
     test_insurance_data_generator,
 )
 import datetime
@@ -18,18 +18,12 @@ import math
 
 
 class ContractsCreation:
-    
     @staticmethod
     def populate_test_data():
         countries = ContractsCreation.create_countries()
         currencies = ContractsCreation.create_currencies()
         insureds = ContractsCreation.create_companies(countries)
         ContractsCreation.create_programs(insureds, currencies)
-
-    @staticmethod
-    def depopulate_and_repopulate_test_data():
-        ContractsCreation.empty_database()
-        ContractsCreation.populate_test_data()
 
     @staticmethod
     def create_countries() -> list[Country]:
@@ -60,26 +54,15 @@ class ContractsCreation:
         return Currency.objects.all()
 
     @staticmethod
-    def create_companies(countries:list[Country]):
+    def create_companies(countries: list[Country]):
         nr = 50
         for v in test_insurance_data_generator(nr, countries):
-            Company.objects.create(country=next((c for c in countries if c.iso_code_3 == v[0])), name=v[1], email=v[2])
+            Company.objects.create(
+                country=next((c for c in countries if c.iso_code_3 == v[0])),
+                name=v[1],
+                email=v[2],
+            )
         return Company.objects.all()
-
-    @staticmethod
-    def empty_database():
-        for c in (
-            Country,
-            Currency,
-            Company,
-            Premium,
-            Expenses,
-            Contract,
-            QuotaShare,
-            ExcessOfLoss,
-            Program,
-        ):
-            c.objects.all().delete()
 
     @staticmethod
     def create_premium(magnitude=1000) -> Premium:
@@ -126,7 +109,7 @@ class ContractsCreation:
                 )
                 a = b
         if contract_type == "XL_Event":
-            reinstatements = {1:(1,1), 2:(1,2)}
+            reinstatements = {1: (1, 1), 2: (1, 2)}
             c.append(
                 ExcessOfLoss.objects.create(
                     participation=max(0, round(random.random(), 2)),
@@ -144,13 +127,13 @@ class ContractsCreation:
                         ),
                         0,
                     ),
-                    reinstatements=reinstatements,
+                    reinstatements_data=reinstatements,
                 )
             )
         return c
 
     @staticmethod
-    def create_contracts(currencies:list[Currency]) -> list[Contract]:
+    def create_contracts(currencies: list[Currency]) -> list[Contract]:
         premium_magnitude = random.choice([10_000 * (3**e) for e in range(10)])
         coverages = ContractsCreation.create_coverages(
             random.choice(("QS", "XL_Risk", "XL_Event")), magnitude=premium_magnitude
@@ -182,6 +165,9 @@ class ContractsCreation:
                 currency=currency,
                 start_date=datetime.date(2020, 1, 1),
                 end_date=datetime.date(2020, 12, 31),
-                contracts={key: value.pk for key, value in zip(range(len(contracts)), contracts)},
+                contracts={
+                    key: value.pk
+                    for key, value in zip(range(len(contracts)), contracts)
+                },
             )
         return Program.objects.all()

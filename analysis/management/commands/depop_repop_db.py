@@ -1,13 +1,14 @@
 from django.core.management.base import BaseCommand
 from analysis.synthetic_data.analysis_creation import CreateAnalysis
 from analysis.synthetic_data.data_creation import ContractsCreation
-from analysis.synthetic_data.delete_models_from_db import empty_database_from_analysis
+from analysis.synthetic_data.delete_models_from_db import empty_database
 
 class Command(BaseCommand):
-    help = 'Repopulate database with test-analysis'
+    help = 'Populate database with test-models'
 
     def handle(self, *args, **options):
-        empty_database_from_analysis()
+        empty_database()
+        ContractsCreation.populate_test_data()
         CreateAnalysis.populate_test_analysis()
 
-        self.stdout.write(self.style.SUCCESS('Successfully depopulated and repopulated the database with new analysis'))
+        self.stdout.write(self.style.SUCCESS('Successfully depopulated and repopulated the database'))

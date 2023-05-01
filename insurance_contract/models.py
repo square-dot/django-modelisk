@@ -4,7 +4,6 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models import CASCADE
 from polymorphic.models import PolymorphicModel
 from django.core.validators import RegexValidator
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import Lower
 from django.urls import reverse
 
@@ -77,7 +76,7 @@ class ExcessOfLoss(Coverage):
     event_limit = FloatField(null=True, default=None)
     aggregate_retention = FloatField(null=True, default=None)
     aggregate_limit = FloatField(null=True, default=None)
-    reinstatements = JSONField(default=dict)
+    reinstatements_data = JSONField(default=dict)
 
     def type_name(self) -> str:
         return "Excess Of Loss"
@@ -89,7 +88,7 @@ class ExcessOfLoss(Coverage):
 
     def get_reinstatments(self) -> Reinstatements:
         reinstatments = Reinstatements({})
-        for r in self.reinstatements:
+        for r in self.reinstatements_data:
             r.add_reinstatement(float(r.value[0]), float(r.value[0]))
         return reinstatments
         
@@ -174,7 +173,7 @@ class Contract(Model):
         fields.extend(self.coverage.get_fields())
         return fields
     
-    def get_fields_for_list(self) -> list[tuple[str, str, any]]:
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]: # type: ignore
         return [("ID", self.get_absolute_url(), self.code()),
                 ("Type", "", self.coverage.type_name()),
                 ("Premium", "", self.premium.upfront_premium),
@@ -219,7 +218,7 @@ class Program(Model):
         fields.extend(contracts)
         return fields
     
-    def get_fields_for_list(self) -> list[tuple[str, str, any]]:
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]: # type: ignore
         fields = [("ID",  self.get_absolute_url(), self.code()),
                 ("Insured", self.insured.get_absolute_url(), self.insured),
                 ("Start date", "", self.start_date),
