@@ -128,8 +128,9 @@ a:hover {
     margin-left: auto
 }
 
-td {
+th, td {
     font-size: 13px;
+    padding: 0rem 1rem;
 }
 
 .row {
