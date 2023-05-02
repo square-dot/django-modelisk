@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from analysis.synthetic_data.analysis_creation import CreateAnalysis
-from analysis.synthetic_data.delete_models_from_db import empty_database_from_analysis
+from analysis.management.synthetic_data.analysis_creation import CreateAnalysis
+from analysis.management.synthetic_data.delete_models_from_db import empty_database_from_analysis
 
 class Command(BaseCommand):
     help = 'Repopulate database with test-analysis'

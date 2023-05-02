@@ -9,7 +9,7 @@ from analysis.models import (
     ExcessOfLoss,
     Program,
 )
-from analysis.synthetic_data.insurance_name_generator import (
+from analysis.management.synthetic_data.insurance_name_generator import (
     test_insurance_data_generator,
 )
 import datetime

@@ -148,6 +148,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "modelisk" / "static"
 ]
 
 # Static file serving.
