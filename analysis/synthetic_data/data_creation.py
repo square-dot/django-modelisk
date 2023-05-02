@@ -1,4 +1,4 @@
-from insurance_contract.models import (
+from analysis.models import (
     Country,
     Company,
     Premium,

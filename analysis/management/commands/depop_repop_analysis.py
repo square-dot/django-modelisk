@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from analysis.synthetic_data.analysis_creation import CreateAnalysis
-from analysis.synthetic_data.data_creation import ContractsCreation
 from analysis.synthetic_data.delete_models_from_db import empty_database_from_analysis
 
 class Command(BaseCommand):

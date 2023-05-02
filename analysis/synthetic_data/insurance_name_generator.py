@@ -1,5 +1,5 @@
 import random
-from insurance_contract.models import Country
+from analysis.models import Country
 
 type = (
     ("USA", "Insurance"),

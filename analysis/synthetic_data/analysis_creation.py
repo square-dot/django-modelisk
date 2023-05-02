@@ -1,5 +1,4 @@
-from analysis.models import ExposureAnalysis, InflationPattern
-from insurance_contract.models import Program
+from analysis.models import Program, ExposureAnalysis, InflationPattern
 import random
 
 

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Premium, ExcessOfLoss, QuotaShare
+from analysis.models import Premium, ExcessOfLoss, QuotaShare
 
 
 class ContractForm(forms.Form):
