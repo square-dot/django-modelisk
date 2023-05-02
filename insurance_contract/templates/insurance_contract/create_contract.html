@@ -2,14 +2,18 @@
 
 {% block content %}
 <h1>Create a contract</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {% if form.active_form %}
-        {{ form.active_form.as_p }}
-    {% else &}
-        <p>I expected something else</p>
-    {% endif %}
-    <button type="submit">Submit</button>
-</form>
+<table>
+    <tbody>
+        {% csrf_token %}
+        {% for field in form %}
+        <tr>
+            <td>
+                <label for="{{ field.id_for_label }}" class="col-form-label">{{ field.label }}</label>
+            </td>
+            <td>{{ field }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+<button type="submit" class="btn btn-primary">Submit</button>
 {% endblock %}
