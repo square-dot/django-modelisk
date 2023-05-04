@@ -16,6 +16,10 @@ class Contract(Model):
     coverage = OneToOneField(Coverage, on_delete=PROTECT)
     program = ForeignKey(Program,on_delete=PROTECT)
 
+    @staticmethod
+    def type_string():
+        return "Contract"
+
     def get_absolute_url(self) -> str:
         return reverse("contract-detail", args=[str(self.pk)])
 
@@ -25,20 +29,13 @@ class Contract(Model):
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_fields(self) -> list[tuple[str, str]]:
-        fields = [
-            ("Code", self.code),
-            ("Type", self.coverage.type_name()),
-            ("Premium", self.premium.upfront_premium),
-            ("Brokerage", self.expenses.upfront_brokerage),
-            ("Commission", self.expenses.upfront_commission),
-        ]
-        fields.extend(self.coverage.get_fields())
-        return fields
+    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
+        return self.get_fields_for_list()
 
     def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
         return [
             ("Code", self.get_absolute_url(), self.code),
+            ("Program", self.program.get_absolute_url(), self.program),
             ("Type", "", self.coverage.type_name()),
             ("Premium", "", self.premium.upfront_premium),
             ("Brokerage", "", self.expenses.upfront_brokerage),

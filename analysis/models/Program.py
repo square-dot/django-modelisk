@@ -12,6 +12,10 @@ class Program(Model):
     start_date = DateField()
     end_date = DateField()
 
+    @staticmethod
+    def type_string():
+        return "Program"
+
     def get_absolute_url(self):
         return reverse("program-detail", args=[str(self.pk)])
     
@@ -21,26 +25,18 @@ class Program(Model):
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_fields(self) -> list[tuple[str, str]]:
+    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
+        fields = self.get_fields_for_list()
         contracts = [
-            ("", f"{contract.code} - {contract.coverage.type_name()}")
+            ("", contract.get_absolute_url(), f"{contract.code} - {contract.coverage.type_name()}")
             for contract in self.contract_set.all()
-        ]
-
-        fields = [
-            ("ID", self.code),
-            ("Insured", self.insured),
-            ("Start date", self.start_date),
-            ("End date", self.end_date),
-            ("Currency", self.currency),
-            ("Contracts", self.contract_set.all().count()),
         ]
         fields.extend(contracts)
         return fields
 
     def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
         fields = [
-            ("ID", self.get_absolute_url(), self.code),
+            ("Code", self.get_absolute_url(), self.code),
             ("Insured", self.insured.get_absolute_url(), self.insured),
             ("Start date", "", self.start_date),
             ("End date", "", self.end_date),

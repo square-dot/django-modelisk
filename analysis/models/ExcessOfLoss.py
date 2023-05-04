@@ -38,4 +38,7 @@ class ExcessOfLoss(Coverage):
             l.append(("Aggregate retention", "{:_}".format(self.aggregate_retention)))
         if self.aggregate_limit is not None:
             l.append(("Aggregate limit", "{:_}".format(self.aggregate_limit)))
+        for reinstatement in self.reinstatement_set.all():
+            l.append((f"Reinstatement {reinstatement.nr}", "Size {:.0f}% - Cost {:.0f}%".format(reinstatement.size * 100, reinstatement.cost * 100)))
         return l
+    

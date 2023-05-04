@@ -41,4 +41,4 @@ class LossDistribution(Model):
         rounded_v = "{:,.2f}".format(var).replace(",", "_")
         rounded_s = "{:,.2f}".format(skew).replace(",", "_")
         rounded_k = "{:,.2f}".format(kurt).replace(",", "_")
-        return "{self.type}-mean:{}-variance:{}-skewness:{}-kurtosis:{}".format(rounded_m, rounded_v, rounded_s, rounded_k)
+        return "{}-mean:{}-variance:{}-skewness:{}-kurtosis:{}".format(self.type, rounded_m, rounded_v, rounded_s, rounded_k)

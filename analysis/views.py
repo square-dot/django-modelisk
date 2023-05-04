@@ -26,14 +26,18 @@ def create_contract(request):
 
 class ContractDetailView(DetailView):
     model = Contract
-    template_name = 'analysis/contract_detail.html'
+    context_object_name = "object"
+    template_name = 'base_detail.html'
 
 class ProgramDetailView(DetailView):
     model = Program
-    template_name = 'analysis/program_detail.html'
+    context_object_name = "object"
+    template_name = 'base_detail.html'
 
 class CompanyDetailView(DetailView):
     model = Company
+    context_object_name = "object"
+    template_name = 'base_detail.html'
 
 class ContractsListView(ListView):
     model = Contract
@@ -71,7 +75,6 @@ class ProgramsListView(ListView):
         context["object_name"] = "Program"
         context["object_plural_name"] = "Programs"
         return context
-
 
 def experience_analysis(request):
     return render(request, 'analysis/experience_analysis_creation.html')
