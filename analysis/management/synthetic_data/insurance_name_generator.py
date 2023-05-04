@@ -1,5 +1,5 @@
 import random
-from analysis.models import Country
+from analysis.models.Country import Country
 
 type = (
     ("USA", "Insurance"),

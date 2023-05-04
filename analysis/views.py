@@ -1,13 +1,16 @@
 from typing import Any, Dict
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from analysis.models import ExposureAnalysis
+
+from .models.Contract import Contract
+from .models.Company import Company
+from analysis.models.ExposureAnalysis import ExposureAnalysis
 
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView
 
 from .forms import ContractForm
-from .models import Contract, Company, Program
+from .models.Program import Program
 
 
 
@@ -19,15 +22,15 @@ def create_contract(request):
     else:
         form = ContractForm()
 
-    return render(request, 'insurance_contract/create_contract.html', {'form': form})
+    return render(request, 'analysis/create_contract.html', {'form': form})
 
 class ContractDetailView(DetailView):
     model = Contract
-    template_name = 'insurance_contract/contract_detail.html'
+    template_name = 'analysis/contract_detail.html'
 
 class ProgramDetailView(DetailView):
     model = Program
-    template_name = 'insurance_contract/program_detail.html'
+    template_name = 'analysis/program_detail.html'
 
 class CompanyDetailView(DetailView):
     model = Company

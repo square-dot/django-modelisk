@@ -1,32 +1,35 @@
-from analysis.models import (
-    Country,
-    Company,
-    Premium,
-    Expenses,
-    Currency,
-    Contract,
-    QuotaShare,
-    ExcessOfLoss,
-    Program,
-)
-from analysis.models import ExposureAnalysis, InflationPattern
+from analysis.models.Company import Company
+from analysis.models.Contract import Contract
+from analysis.models.Country import Country
+from analysis.models.Currency import Currency
+from analysis.models.ExcessOfLoss import ExcessOfLoss
+from analysis.models.Expenses import Expenses
+from analysis.models.InflationPattern import InflationPattern
+from analysis.models.Premium import Premium, Reinstatement
+from analysis.models.QuotaShare import QuotaShare
+from analysis.models.Program import Program
+from analysis.models.Code import Code
+from analysis.models.ExposureAnalysis import ExposureAnalysis
 
 
 def empty_database():
     for c in (
-        Country,
-        Currency,
-        Company,
-        Premium,
-        Expenses,
-        Contract,
-        QuotaShare,
-        ExcessOfLoss,
-        Program,
         ExposureAnalysis,
         InflationPattern,
+        Contract,
+        Program,
+        QuotaShare,
+        ExcessOfLoss,
+        Reinstatement,
+        Premium,
+        Expenses,
+        Company,
+        Code,
+        Country,
+        Currency,
     ):
         c.objects.all().delete()
+
 
 def empty_database_from_analysis():
     for c in (
