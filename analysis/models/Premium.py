@@ -1,7 +1,6 @@
 from django.db.models import FloatField, Model, ForeignKey, PROTECT
 from django.db.models import Model, BooleanField, CharField, ForeignKey, PROTECT
 from analysis.models.ExposureAnalysis import ExposureAnalysis
-from analysis.models.Coverage import Coverage
 from scipy import stats
 from scipy.stats import gamma, pareto
 from analysis.models.ExcessOfLoss import ExcessOfLoss
