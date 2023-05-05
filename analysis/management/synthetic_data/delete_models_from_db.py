@@ -5,11 +5,12 @@ from analysis.models.Currency import Currency
 from analysis.models.ExcessOfLoss import ExcessOfLoss
 from analysis.models.Expenses import Expenses
 from analysis.models.InflationPattern import InflationPattern
-from analysis.models.Premium import Premium, Reinstatement
+from analysis.models.Premium import Premium
 from analysis.models.QuotaShare import QuotaShare
 from analysis.models.Program import Program
 from analysis.models.Code import Code
 from analysis.models.ExposureAnalysis import ExposureAnalysis
+from analysis.models.Reinstatement import Reinstatement
 
 
 def empty_database():

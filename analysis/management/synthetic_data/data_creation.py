@@ -4,7 +4,7 @@ from analysis.models.Country import Country
 from analysis.models.Currency import Currency
 from analysis.models.ExcessOfLoss import ExcessOfLoss
 from analysis.models.Expenses import Expenses
-from analysis.models.Premium import Premium, Reinstatement
+from analysis.models.Premium import Premium
 from analysis.models.QuotaShare import QuotaShare
 from analysis.models.Program import Program
 from analysis.management.synthetic_data.insurance_name_generator import (
@@ -13,6 +13,8 @@ from analysis.management.synthetic_data.insurance_name_generator import (
 import datetime
 import random
 import math
+
+from analysis.models.Reinstatement import Reinstatement
 
 
 class ContractsCreation:

@@ -1,6 +1,6 @@
 from analysis.models.InflationPattern import InflationPattern
 from analysis.models.Program import Program
-from analysis.models.Premium import LossDistribution
+from analysis.models.LossDistribution import LossDistribution
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 import random
 

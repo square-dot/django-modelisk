@@ -18,17 +18,21 @@ class Program(Model):
 
     def get_absolute_url(self):
         return reverse("program-detail", args=[str(self.pk)])
-    
+
     def __repr__(self) -> str:
         return f"{self.code} {self.insured}"
 
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
+    def get_fields(self) -> list[tuple[str, str, any]]:  # type: ignore
         fields = self.get_fields_for_list()
         contracts = [
-            ("", contract.get_absolute_url(), f"{contract.code} - {contract.coverage.type_name()}")
+            (
+                "",
+                contract.get_absolute_url(),
+                f"{contract.code} - {contract.coverage.type_name()}",
+            )
             for contract in self.contract_set.all()
         ]
         fields.extend(contracts)
