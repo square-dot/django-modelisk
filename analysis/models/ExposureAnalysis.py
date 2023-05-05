@@ -11,22 +11,30 @@ class ExposureAnalysis(Model):
     inflation_pattern = ForeignKey(InflationPattern, on_delete=PROTECT)
     program = ForeignKey(Program, on_delete=PROTECT)
 
-    def get_fields(self):
-        a = [
-            ("Code", self.code),
-            ("Name", self.name),
-            ("Program", self.program),
-        ]
-        for ld in self.lossdistribution_set.all():
-            a.append(("Distribution", ld))
-        return a
+    def __str__(self):
+        return f"{self.code} {self.name}"
 
-    def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
+    @staticmethod
+    def type_string():
+        return "Analysis"
+    
+    def get_base_fields(self):
         return [
-            ("Code", self.get_absolute_url(), self.code),
             ("Name", "", self.name),
             ("Program", self.program.get_absolute_url(), self.program),
         ]
+    
+    def get_fields(self):
+        fields = self.get_base_fields()
+        fields.insert(0, ("Code", "", self.code))
+        for ld in self.lossdistribution_set.all():
+            fields.append(("Distribution", "", ld))
+        return fields
+    
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
+        fields = self.get_base_fields()
+        fields.insert(0, ("Code", self.get_absolute_url(), self.code))
+        return fields
 
     def get_absolute_url(self):
         return reverse("exposure-analysis-detail", args=[str(self.pk)])

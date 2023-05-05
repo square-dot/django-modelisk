@@ -24,9 +24,24 @@ class Program(Model):
 
     def __str__(self) -> str:
         return self.__repr__()
+    
+    def descritpion_field(self, has_link:bool):
+        if has_link:
+            return ("Code", self.get_absolute_url(), self.code)
+        return ("Code", "", self.code)
+
+    def get_base_fields(self):
+        return [
+            ("Insured", self.insured.get_absolute_url(), self.insured),
+            ("Start date", "", self.start_date),
+            ("End date", "", self.end_date),
+            ("Currency", "", self.currency),
+            ("Nr of contracts", "", self.contract_set.all().count()),
+        ]
 
     def get_fields(self) -> list[tuple[str, str, any]]:  # type: ignore
-        fields = self.get_fields_for_list()
+        fields = self.get_base_fields()
+        fields.insert(0, ("Code", "", self.code))
         contracts = [
             (
                 "",
@@ -39,12 +54,6 @@ class Program(Model):
         return fields
 
     def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
-        fields = [
-            ("Code", self.get_absolute_url(), self.code),
-            ("Insured", self.insured.get_absolute_url(), self.insured),
-            ("Start date", "", self.start_date),
-            ("End date", "", self.end_date),
-            ("Currency", "", self.currency),
-            ("Nr of contracts", "", self.contract_set.all().count()),
-        ]
+        fields = self.get_base_fields()
+        fields.insert(0, ("Code", self.get_absolute_url(), self.code))
         return fields

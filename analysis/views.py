@@ -81,7 +81,8 @@ def experience_analysis(request):
 
 class ExposureAnalysisDetailView(DetailView):
     model = ExposureAnalysis
-    template_name = 'analysis/exposure_analysis_detail.html'
+    context_object_name = "object"
+    template_name = 'base_detail.html'
 
 class ExposureAnalysisListView(ListView):
     model = ExposureAnalysis

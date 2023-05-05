@@ -28,16 +28,23 @@ class Contract(Model):
 
     def __str__(self) -> str:
         return self.__repr__()
-
-    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
-        return self.get_fields_for_list()
-
-    def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
+    
+    def get_base_fields(self):
         return [
-            ("Code", self.get_absolute_url(), self.code),
             ("Program", self.program.get_absolute_url(), self.program),
             ("Type", "", self.coverage.type_name()),
             ("Premium", "", self.premium.upfront_premium),
             ("Brokerage", "", self.expenses.upfront_brokerage),
             ("Commission", "", self.expenses.upfront_commission),
         ]
+
+    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
+        fields = self.get_base_fields()
+        fields.insert(0, ("Code", "", self.code))
+        return fields
+
+
+    def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
+        fields = self.get_base_fields()
+        fields.insert(0, ("Code", self.get_absolute_url(), self.code))
+        return fields

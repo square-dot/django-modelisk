@@ -23,15 +23,21 @@ class Company(Model):
     def get_absolute_url(self):
         return reverse("company-detail", args=[str(self.pk)])
 
-    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
-        return self.get_fields_for_list()
-
-    def get_fields_for_list(self) -> list[tuple[str, str, str]]:
+    def get_base_fields(self):
         return [
-            ("Name", self.get_absolute_url(), self.name),
             ("Country", "", self.country.name),
             ("E-mail", "", self.email),
         ]
+
+    def get_fields(self) -> list[tuple[str, str, any]]: # type: ignore
+        fields = self.get_base_fields()
+        fields.insert(0, ("Name", "", self.name))
+        return fields
+
+    def get_fields_for_list(self) -> list[tuple[str, str, str]]:
+        fields = self.get_base_fields()
+        fields.insert(0, ("Name", self.get_absolute_url(), self.name))
+        return fields
 
     class Meta:
         constraints = [
