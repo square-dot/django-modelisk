@@ -9,7 +9,7 @@ class CreateAnalysis:
     @staticmethod
     def populate_test_analysis():
         programs = list(Program.objects.all())
-        inflation = InflationPattern.objects.create(values={})
+        inflation = InflationPattern.objects.create()
         analysis = CreateAnalysis.create_test_analysis(programs, inflation)
         CreateAnalysis.create_loss_distributions(analysis)
 

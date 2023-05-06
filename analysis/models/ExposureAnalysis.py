@@ -8,7 +8,7 @@ from django.urls import reverse
 class ExposureAnalysis(Model):
     code = OneToOneField(Code, on_delete=PROTECT, default=Code.next_analysis_code)
     name = CharField(max_length=256)
-    inflation_pattern = ForeignKey(InflationPattern, on_delete=PROTECT)
+    inflation_pattern = ForeignKey(InflationPattern, on_delete=PROTECT, null=True)
     program = ForeignKey(Program, on_delete=PROTECT)
 
     def __str__(self):
