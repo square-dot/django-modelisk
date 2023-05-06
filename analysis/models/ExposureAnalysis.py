@@ -1,8 +1,10 @@
 from analysis.models.InflationPattern import InflationPattern
 from analysis.models.Program import Program
 from analysis.models.Code import Code
+from analysis.models.LossDistribution import LossDistribution
 from django.db.models import PROTECT, CharField, ForeignKey, Model, OneToOneField
 from django.urls import reverse
+from analysis.models.Convolution import convolve
 
 
 class ExposureAnalysis(Model):
@@ -38,3 +40,11 @@ class ExposureAnalysis(Model):
 
     def get_absolute_url(self):
         return reverse("exposure-analysis-detail", args=[str(self.pk)])
+    
+    def get_total_convolution(self):
+        ld = self.lossdistriubution_set.all() # type: ignore
+        if ld.filter(is_total_distribution=True):
+            return ld.get(is_total_distribution=True)
+        cv = convolve(list(ld))
+        d = LossDistribution.objects.create()
+
