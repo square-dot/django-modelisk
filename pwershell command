@@ -1,0 +1,15 @@
+--delete all __pycache__
+
+for /d /r . %d in (__pycache__\*) do @if not "%~dpd"=="%cd%\venv\__pycache__" if not "%~dpd"=="%cd%\.venv\__pycache__" rd /s /q "%d"
+
+
+
+--delete old migrations files
+
+for /f "delims=" %d in ('dir /b /s /ad ^| findstr /v /i /c:".venv" /c:"venv"') do (
+    for /f "delims=" %f in ('dir /b "%d\migrations\*" ^| findstr /v /i /c:"__init__.py"') do (
+        del /q "%d\migrations\%f"
+    )
+)
+
+

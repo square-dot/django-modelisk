@@ -11,6 +11,7 @@ from analysis.models.Program import Program
 from analysis.models.Code import Code
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 from analysis.models.Reinstatement import Reinstatement
+from analysis.models.LossDistribution import GammaDistribution, ParetoDistribution, EmpiricalDistribution
 
 
 def empty_database():
@@ -34,6 +35,9 @@ def empty_database():
 
 def empty_database_from_analysis():
     for c in (
+        GammaDistribution,
+        ParetoDistribution,
+        EmpiricalDistribution,
         ExposureAnalysis,
         InflationPattern,
     ):

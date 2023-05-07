@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% block content %}
+<h1>{{ exposureanalysis.type_string }} {{ exposureanalysis }}</h1>
+
+<table>
+    {% for label, url, value in exposureanalysis.get_fields %}
+        <tr>
+            <td>{{ label }}</td>
+            <td>{% if url %}<a href="{{ url }}">{% endif%}{{ value }}{% if url %}</a>{% endif%}</td>
+        </tr>
+    {% endfor %}
+</table>
+<br/>
+{% if exposureanalysis.has_total_distribution %}
+<img src="{% static image_path %}" alt="Plot Image">
+{% else %}
+The total convolution has not yet been calculated.
+{% endif %}
+<br/>
+<a href="{% url 'exposure-analysis-edit' exposureanalysis.id %}">Edit</a>
+{% endblock %}

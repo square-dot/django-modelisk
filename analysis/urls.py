@@ -12,4 +12,5 @@ urlpatterns = [
     path("experience-analysis", views.experience_analysis, name="experience-analysis-creation"),
     path("exposure-analysis-detail/<int:pk>", views.ExposureAnalysisDetailView.as_view(), name="exposure-analysis-detail"),
     path("exposure-analysis", views.ExposureAnalysisListView.as_view(), name="exposure-analysis"),
+    path("exposure-analysis-edit/<int:pk>", views.exposure_analysis_edit, name="exposure-analysis-edit"),
 ]

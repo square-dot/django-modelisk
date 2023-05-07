@@ -1,6 +1,6 @@
 from analysis.models.InflationPattern import InflationPattern
 from analysis.models.Program import Program
-from analysis.models.LossDistribution import LossDistribution
+from analysis.models.LossDistribution import ParetoDistribution, GammaDistribution
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 import random
 
@@ -19,18 +19,23 @@ class CreateAnalysis:
 
     @staticmethod
     def create_loss_distributions(analysis: list[ExposureAnalysis]):
-        for a in analysis:
-            LossDistribution.objects.create(
-                analysis=a,
-                is_total_distribution=False,
-                type=random.choice(
-                    (
-                        LossDistribution.GAMMA,
-                        LossDistribution.PARETO,
-                        LossDistribution.ECDF,
+        for i, a in enumerate(analysis):
+            match i % 2:
+                case 0:
+                    ParetoDistribution.objects.create(
+                        analysis=a,
+                        is_total_distribution=False,
+                        alpha = 2,
+                        threshold = 10_000,
                     )
-                ),
-            )
+                case 1:
+                    GammaDistribution.objects.create(
+                        analysis=a,
+                        is_total_distribution=False,
+                        shape = 2,
+                        rate = 0.01
+                    )
+            
 
     @staticmethod
     def create_test_analysis(programs: list[Program], inflation: InflationPattern):

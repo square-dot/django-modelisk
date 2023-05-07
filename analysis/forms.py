@@ -1,7 +1,8 @@
 from django import forms
+
 from analysis.models.ExcessOfLoss import ExcessOfLoss
-from analysis.models.QuotaShare import QuotaShare
 from analysis.models.Premium import Premium
+from analysis.models.QuotaShare import QuotaShare
 
 
 class ContractForm(forms.Form):
@@ -30,4 +31,7 @@ class QuotaShareForm(forms.ModelForm):
     class Meta:
         model = QuotaShare
         fields = '__all__'
+
+class CreateConvolution(forms.Form):
+    pk = forms.IntegerField()
 
