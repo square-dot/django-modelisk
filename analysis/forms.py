@@ -33,5 +33,5 @@ class QuotaShareForm(forms.ModelForm):
         fields = '__all__'
 
 class CreateConvolution(forms.Form):
-    pk = forms.IntegerField()
+    function = forms.CharField(max_length=256)
 

@@ -26,14 +26,17 @@ class LossDistribution(PolymorphicModel):
         return "{}-mean:{}-variance:{}-skewness:{}-kurtosis:{}".format(
             self.type_string(), rounded_m, rounded_v, rounded_s, rounded_k
         )
-    
+
+    class Meta:
+        unique_together = [("analysis", "is_total_distribution")]
+
 
 class ParetoDistribution(LossDistribution):
     alpha = FloatField()
     threshold = FloatField()
 
     def type_string(self):
-        return "Pareto"
+        return "Pareto distribution"
 
     def cdf(self, x):
         return pareto.cdf(x, self.alpha, self.threshold)
@@ -41,13 +44,18 @@ class ParetoDistribution(LossDistribution):
     def ppf(self, x):
         return pareto.ppf(x, self.alpha, self.threshold)
 
+    def __str__(self):
+        return "{} [alpha: {:,.2f} - threshold: {:,.2f}]".format(
+            self.type_string(), self.alpha, self.threshold
+        )
+
 
 class GammaDistribution(LossDistribution):
     shape = FloatField()
     rate = FloatField()
 
     def type_string(self):
-        return "Gamma"
+        return "Gamma distribution"
 
     def cdf(self, x):
         return gamma.cdf(x, self.shape, self.rate)
@@ -55,12 +63,17 @@ class GammaDistribution(LossDistribution):
     def ppf(self, x):
         return gamma.ppf(x, self.shape, self.rate)
 
+    def __str__(self):
+        return "{} [alpha: {:,.2f} - rate: {:,.2f}]".format(
+            self.type_string(), self.shape, self.rate
+        )
+
 
 class EmpiricalDistribution(LossDistribution):
-    sample = JSONField(null=True)
+    sample = JSONField(null=False)
 
     def type_string(self):
-        return "Empirical Distribution"
+        return "Empirical distribution"
 
     def cdf(self, x):
         return NotImplementedError("ppf of ecdf still to define")
@@ -80,3 +93,6 @@ class EmpiricalDistribution(LossDistribution):
         plt.close()
 
         return image_path
+
+    def __str__(self):
+        return "{} [{} points]".format(self.type_string(), len(self.sample))

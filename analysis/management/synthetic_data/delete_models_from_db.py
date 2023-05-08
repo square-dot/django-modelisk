@@ -13,16 +13,26 @@ from analysis.models.ExposureAnalysis import ExposureAnalysis
 from analysis.models.Reinstatement import Reinstatement
 from analysis.models.LossDistribution import GammaDistribution, ParetoDistribution, EmpiricalDistribution
 
+def empty_database_from_analysis():
+    for c in (
+        GammaDistribution,
+        ParetoDistribution,
+        EmpiricalDistribution,
+        ExposureAnalysis,
+        InflationPattern,
+    ):
+        c.objects.all().delete()
 
 def empty_database():
+    empty_database_from_analysis()
     for c in (
         ExposureAnalysis,
         InflationPattern,
         Contract,
         Program,
         QuotaShare,
-        ExcessOfLoss,
         Reinstatement,
+        ExcessOfLoss,
         Premium,
         Expenses,
         Company,
@@ -33,12 +43,4 @@ def empty_database():
         c.objects.all().delete()
 
 
-def empty_database_from_analysis():
-    for c in (
-        GammaDistribution,
-        ParetoDistribution,
-        EmpiricalDistribution,
-        ExposureAnalysis,
-        InflationPattern,
-    ):
-        c.objects.all().delete()
+

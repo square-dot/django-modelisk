@@ -14,10 +14,13 @@
     </tr>
     {% endfor %}
 </table>
+{% if not exposureanalysis.has_total_distribution %}
 <br/>
-<form method="POST" action="{% url 'exposure-analysis-detail' exposureanalysis.id %}">
+<form method="POST" action="{% url 'exposure-analysis-edit' exposureanalysis.id %}">
     {% csrf_token %}
     {{ create_convolution }}
     <button type="submit">Create convolution</button>
 </form>
+{% endif %}
+<a href="{% url 'exposure-analysis-detail' exposureanalysis.id %}">Back</a>
 {% endblock %}
