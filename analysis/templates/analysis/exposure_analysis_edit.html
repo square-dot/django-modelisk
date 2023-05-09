@@ -18,7 +18,7 @@
 <br/>
 <form method="POST" action="{% url 'exposure-analysis-edit' exposureanalysis.id %}">
     {% csrf_token %}
-    {{ create_convolution }}
+    {{ form }}
     <button type="submit">Create convolution</button>
 </form>
 {% endif %}

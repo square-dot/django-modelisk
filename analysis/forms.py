@@ -33,5 +33,5 @@ class QuotaShareForm(forms.ModelForm):
         fields = '__all__'
 
 class CreateConvolution(forms.Form):
-    function = forms.CharField(max_length=256)
+    function = forms.CharField(max_length=256, widget=forms.HiddenInput())
 

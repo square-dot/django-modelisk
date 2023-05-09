@@ -27,8 +27,10 @@ class ExposureAnalysis(Model):
     def get_fields(self):
         fields = self.get_base_fields()
         fields.insert(0, ("Code", "", self.code))
-        for ld in self.lossdistribution_set.all(): # type: ignore
+        for ld in self.lossdistribution_set.filter(is_total_distribution=False): # type: ignore
             fields.append(("Distribution", "", ld))
+        if self.has_total_distribution():
+            fields.append(("Total distribution", "", self.lossdistribution_set.get(is_total_distribution=True))) # type: ignore
         return fields
     
     def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore

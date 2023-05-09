@@ -12,4 +12,5 @@ for /f "delims=" %d in ('dir /b /s /ad ^| findstr /v /i /c:".venv" /c:"venv"') d
     )
 )
 
-
+--start
+d: & cd git\django-modelisk & .venv\Scripts\activate & python manage.py runserver

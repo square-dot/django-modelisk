@@ -4,7 +4,7 @@ from django.views.generic import DetailView, ListView
 from analysis.forms import ContractForm, CreateConvolution
 from analysis.models.Company import Company
 from analysis.models.Contract import Contract
-from analysis.models.Convolution import convolve
+from analysis.models.Convolution import convolve, plot_empirical_distribution
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 from analysis.models.LossDistribution import LossDistribution, EmpiricalDistribution
 from analysis.models.Program import Program
@@ -92,7 +92,7 @@ class ExposureAnalysisDetailView(DetailView):
 
     def get_context_data(self, **kwargs: any) -> dict[str, any]:  # type: ignore
         context = super().get_context_data(**kwargs)
-        context["image_path"] = "media/trex.jpg"
+        context["image_path"] = f"media/plot_{self.object.code}.png" # type: ignore
         return context
 
 
@@ -114,22 +114,28 @@ def exposure_analysis_edit(request, pk):
         model_obj = ExposureAnalysis.objects.get(pk=pk)
         form = CreateConvolution(request.POST)
         if form.is_valid():
-            lds = LossDistribution.objects.filter(analysis=model_obj)
-            sample = convolve(list(lds))
-            EmpiricalDistribution.objects.create(
-                analysis=model_obj, sample=sample, is_total_distribution=True
-            )
+            if form.cleaned_data["function"] == "create_convolution":
+                lds = LossDistribution.objects.filter(analysis=model_obj)
+                sample = convolve(list(lds))
+                EmpiricalDistribution.objects.create(
+                    analysis=model_obj, sample=sample, is_total_distribution=True
+                )
+                _ = plot_empirical_distribution(sample, anlysis_code=model_obj.code)
+            else:
+                print(form.cleaned_data["function"])
         else:
             print(form.errors.as_data())
         context = {
             "exposureanalysis": model_obj,
-            "form": CreateConvolution(initial={'function': "create_convolution"}),
+            "form": CreateConvolution(
+                initial={"function": "create_convolution"},
+            ),
         }
         return render(request, "analysis/exposure_analysis_edit.html", context=context)
     else:
         model_obj = ExposureAnalysis.objects.get(pk=pk)
         context = {
             "exposureanalysis": model_obj,
-            "form": CreateConvolution(initial={'function': "create_convolution"}),
+            "form": CreateConvolution(initial={"function": "create_convolution"}),
         }
         return render(request, "analysis/exposure_analysis_edit.html", context=context)
