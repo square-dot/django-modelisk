@@ -7,7 +7,7 @@ from analysis.models.contract.Program import Program
 
 
 class BaseContract(PolymorphicModel):
-    code = OneToOneField(Code, on_delete=PROTECT) # , default=Code.next_contract_code
+    code = OneToOneField(Code, on_delete=PROTECT, default=Code.next_contract_code)
     currency = ForeignKey(Currency, on_delete=PROTECT)
     premium = OneToOneField(Premium, on_delete=PROTECT)
     brokerage = FloatField(default=0)
@@ -20,7 +20,7 @@ class BaseContract(PolymorphicModel):
         return "Contract"
 
     def __repr__(self) -> str:
-        return f"{self.code} {self.coverage.__repr__()}"
+        return f"{self.code} {self.type_string()}"
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -28,10 +28,10 @@ class BaseContract(PolymorphicModel):
     def get_base_fields(self):
         return [
             ("Program", self.program.get_absolute_url(), self.program),
-            ("Type", "", self.coverage.type_name()),
+            ("Type", "", self.type_string()),
             ("Premium", "", self.premium.upfront_premium),
-            ("Brokerage", "", self.expenses.upfront_brokerage),
-            ("Commission", "", self.expenses.upfront_commission),
+            ("Brokerage", "", self.brokerage),
+            ("Commission", "", self.commission),
         ]
 
     def get_fields(self) -> list[tuple[str, str, any]]:  # type: ignore

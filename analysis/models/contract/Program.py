@@ -38,7 +38,7 @@ class Program(Model):
             ("Start date", "", self.start_date),
             ("End date", "", self.end_date),
             ("Currency", "", self.currency),
-            ("Nr of contracts", "", self.contract_set.all().count()), # type: ignore
+            ("Nr of contracts", "", self.basecontract_set.all().count()), # type: ignore
         ]
 
     def get_fields(self) -> list[tuple[str, str, any]]:  # type: ignore
@@ -50,7 +50,7 @@ class Program(Model):
                 contract.get_absolute_url(),
                 f"{contract.code} - {contract.coverage.type_name()}",
             )
-            for contract in self.contract_set.all() # type: ignore
+            for contract in self.basecontract_set.all() # type: ignore
         ]
         fields.extend(contracts)
         return fields

@@ -3,10 +3,10 @@ from django.db.models import PROTECT, FloatField, ForeignKey, Model, PositiveInt
 
 
 class Reinstatement(Model):
-    coverage = ForeignKey(BaseExcessOfLoss, on_delete=PROTECT)
+    contract = ForeignKey(BaseExcessOfLoss, on_delete=PROTECT)
     nr = PositiveIntegerField()
     size = FloatField(default=1)
     cost = FloatField(default=1)
 
     class Meta:
-        unique_together = [('coverage', 'nr')]
+        unique_together = [('contract', 'nr')]
