@@ -1,6 +1,7 @@
-from analysis.models.Company import Company
-from analysis.models.Currency import Currency
-from analysis.models.Code import Code
+from analysis.models.reference_value.Company import Company
+from analysis.models.reference_value.Currency import Currency
+from analysis.models.reference_value.Code import Code
+from analysis.models.reference_value.Classification import Classification
 from django.db.models import PROTECT, DateField, ForeignKey, Model, OneToOneField
 from django.urls import reverse
 
@@ -9,6 +10,7 @@ class Program(Model):
     code = OneToOneField(Code, on_delete=PROTECT, default=Code.next_program_code)
     insured = ForeignKey(Company, on_delete=PROTECT)
     currency = ForeignKey(Currency, on_delete=PROTECT)
+    line_of_business = ForeignKey(Classification, on_delete=PROTECT)
     start_date = DateField()
     end_date = DateField()
 

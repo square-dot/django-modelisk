@@ -1,20 +1,18 @@
-from analysis.models.Company import Company
-from analysis.models.Contract import Contract
-from analysis.models.Country import Country
-from analysis.models.Currency import Currency
-from analysis.models.ExcessOfLoss import ExcessOfLoss
-from analysis.models.Expenses import Expenses
-from analysis.models.Premium import Premium
-from analysis.models.QuotaShare import QuotaShare
-from analysis.models.Program import Program
-from analysis.management.synthetic_data.insurance_name_generator import (
-    test_insurance_data_generator,
-)
 import datetime
-import random
 import math
+import random
 
-from analysis.models.Reinstatement import Reinstatement
+from analysis.management.synthetic_data.insurance_name_generator import \
+	test_insurance_data_generator
+from analysis.models.reference_value.Company import Company
+from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
+from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
+from analysis.models.contract.QuotaShare import QuotaShare
+from analysis.models.reference_value.Country import Country
+from analysis.models.reference_value.Currency import Currency
+from analysis.models.contract.Premium import Premium
+from analysis.models.contract.Program import Program
+from analysis.models.contract.Reinstatement import Reinstatement
 
 
 class ContractsCreation:
@@ -24,7 +22,7 @@ class ContractsCreation:
         currencies = ContractsCreation.create_currencies()
         insureds = ContractsCreation.create_companies(countries)
         programs = ContractsCreation.create_programs(insureds, currencies)
-        ContractsCreation.create_contracts(currencies, programs)
+        for program in programs: ContractsCreation.create_contracts(random.choice(currencies), program)
 
     @staticmethod
     def create_countries() -> list[Country]:
@@ -66,63 +64,6 @@ class ContractsCreation:
         return Company.objects.all()
 
     @staticmethod
-    def create_premium(magnitude=1000) -> Premium:
-        premium = max(
-            round(random.normalvariate(mu=magnitude, sigma=magnitude / 4), 2), 0
-        )
-        return Premium.objects.create(upfront_premium=premium)
-
-    @staticmethod
-    def create_expenses(magnitude=1000) -> Expenses:
-        brokerage = max(
-            round(random.normalvariate(mu=magnitude / 20, sigma=magnitude / 40), 2), 0
-        )
-        commission = max(
-            round(random.normalvariate(mu=magnitude / 30, sigma=magnitude / 60), 2), 0
-        )
-        return Expenses.objects.create(
-            upfront_brokerage=brokerage, upfront_commission=commission
-        )
-
-    @staticmethod
-    def create_coverages(contract_type: str, magnitude=1000) -> list:
-        c = []
-        if contract_type == "QS":
-            c.append(
-                QuotaShare.objects.create(
-                    participation=max(0, round(random.random(), 2)),
-                    share=max(round(random.random(), 4), 0),
-                )
-            )
-        if contract_type == "XL_Risk":
-            rounding = -1 * int(math.log10(magnitude) - 2)
-            magnitude *= 3
-            a = max(round(random.normalvariate(mu=magnitude), rounding), 0)
-            for _ in range(random.randint(1, 3)):
-                magnitude *= 3
-                b = max(round(random.normalvariate(mu=magnitude), rounding), 0)
-                c.append(
-                    ExcessOfLoss.objects.create(
-                        participation=max(0, round(random.random(), 2)),
-                        risk_retention=a,
-                        risk_limit=b,
-                    )
-                )
-                a = b
-        if contract_type == "XL_Event":
-            rounding = -1 * int(math.log(magnitude) - 1)
-            er = max(round(random.normalvariate(mu=magnitude * 3), rounding), 0)
-            el = max(round(random.normalvariate(mu=magnitude * 10), rounding), 0)
-            cc = ExcessOfLoss.objects.create(
-                participation=max(0, round(random.random(), 2)),
-                event_retention=er,
-                event_limit=el,
-            )
-            c.append(cc)
-            Reinstatement.objects.create(coverage=cc, nr=1, size=1, cost=0.5)
-        return c
-
-    @staticmethod
     def create_programs(insureds, currencies) -> list[Program]:
         nr = 100
         for _ in range(nr):
@@ -136,24 +77,70 @@ class ContractsCreation:
             )
         return list(Program.objects.all())
 
+
     @staticmethod
-    def create_contracts(currencies: list[Currency], programs: list[Program]):
-        premium_magnitude = random.choice([10_000 * (3**e) for e in range(10)])
-        for p in programs:
-            coverages = ContractsCreation.create_coverages(
-                random.choice(("QS", "XL_Risk", "XL_Event")),
-                magnitude=premium_magnitude,
-            )
-            for coverage in coverages:
-                currency = random.choice(currencies)
-                premium = ContractsCreation.create_premium(magnitude=premium_magnitude)
-                expenses = ContractsCreation.create_expenses(
-                    magnitude=premium_magnitude
-                )
-                Contract.objects.create(
-                    currency=currency,
-                    premium=premium,
-                    expenses=expenses,
-                    coverage=coverage,
-                    program=p,
-                )
+    def create_premium(magnitude=1000) -> Premium:
+        premium = max(
+            round(random.normalvariate(mu=magnitude, sigma=magnitude / 4), 2), 0
+        )
+        return Premium.objects.create(upfront_premium=premium)
+
+
+    @staticmethod
+    def create_contracts(currency: Currency, program: Program):
+        magnitude = random.choice([10_000 * (3**e) for e in range(10)])
+        rounding = -1 * int(math.log10(magnitude) - 2)
+        contract_type = random.choice(("QS", "XL_Risk", "XL_Event"))
+
+        premium = ContractsCreation.create_premium(magnitude=magnitude)
+        brokerage = max(
+            round(random.normalvariate(mu=magnitude / 20, sigma=magnitude / 40), 2), 0
+        )
+        commission = max(
+            round(random.normalvariate(mu=magnitude / 30, sigma=magnitude / 60), 2), 0
+        )
+        share=max(round(random.random(), 4), 0)
+        participation=max(0, round(random.random(), 2))
+        match contract_type:
+            case "QS":
+                QuotaShare.objects.create(
+                    program = program,
+                    currency = currency,
+                    premium = premium,
+                    brokerage = brokerage,
+                    commission = commission,
+                    participation=participation,
+                    share=share,
+                    )
+            case "XL_Risk":
+                retention = max(round(random.normalvariate(mu=magnitude), rounding), 0),
+                limit = max(round(random.normalvariate(mu=magnitude), rounding), 0),
+                ExcessOfLossRisk.objects.create(
+                    program = program,
+                    currency = currency,
+                    premium = premium,
+                    brokerage = brokerage,
+                    commission = commission,
+                    participation=participation,
+                    risk_retention = retention,
+                    risk_limit = limit,
+                    aggreagate_retention = None,
+                    aggregate_limit = None,
+                    )
+            case "XL_Event":
+                retention = max(round(random.normalvariate(mu=magnitude), rounding), 0),
+                limit = max(round(random.normalvariate(mu=magnitude), rounding), 0),
+                c = ExcessOfLossEvent.objects.create(
+                    program = program,
+                    currency = currency,
+                    premium = premium,
+                    brokerage = brokerage,
+                    commission = commission,
+                    participation=participation,
+                    event_retention = retention,
+                    event_limit = limit,
+                    aggreagate_retention = None,
+                    aggregate_limit = None,
+                    )
+                Reinstatement.objects.create(coverage=c, nr=1, size=1, cost=0.5)
+

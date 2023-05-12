@@ -1,13 +1,10 @@
-from analysis.models.LossDistribution import LossDistribution
-import matplotlib.pyplot as plt
-from modelisk.settings import BASE_DIR
 import os
-import math
 
+import matplotlib.pyplot as plt
 
-def convolve(distributions: list[LossDistribution]) -> dict[int, float]:
-    points = {i: math.sqrt(i) for i in range(1000)}
-    return points
+from analysis.models.contract.BaseContract import BaseContract
+from analysis.models.LossDistribution import EmpiricalDistribution
+from modelisk.settings import BASE_DIR
 
 
 def plot_empirical_distribution(data_dict, anlysis_code):
@@ -22,4 +19,14 @@ def plot_empirical_distribution(data_dict, anlysis_code):
         BASE_DIR, "analysis/static/media/", f"plot_{anlysis_code}.png"
     )
     plt.savefig(file_path, format="png")
+    return file_path
+
+
+def name_of_total_distribution_plot(ecdf: EmpiricalDistribution):
+    assert ecdf.is_total_distribution
+    return f"plot_{ecdf.contract.code}.png"
+
+
+def plot_folder() -> str:
+    file_path = os.path.join(BASE_DIR, "analysis/static/media/")
     return file_path

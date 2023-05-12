@@ -1,5 +1,5 @@
 from analysis.models.InflationPattern import InflationPattern
-from analysis.models.Program import Program
+from analysis.models.contract.Program import Program
 from analysis.models.LossDistribution import ParetoDistribution, GammaDistribution
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 import random

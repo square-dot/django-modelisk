@@ -1,4 +1,4 @@
-from analysis.models.Country import Country
+from analysis.models.reference_value.Country import Country
 from django.db import models
 from django.db.models import PROTECT, CharField, ForeignKey, Model
 from django.db.models.functions import Lower

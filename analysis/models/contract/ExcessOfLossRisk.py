@@ -1,17 +1,19 @@
-from analysis.models.Coverage import Coverage
+from analysis.models.contract.BaseContract import BaseExcessOfLoss
 from django.db.models import FloatField
+from django.urls import reverse
 
 
-class ExcessOfLoss(Coverage):
+class ExcessOfLossRisk(BaseExcessOfLoss):
     risk_retention = FloatField(null=True, default=None)
     risk_limit = FloatField(null=True, default=None)
-    event_retention = FloatField(null=True, default=None)
-    event_limit = FloatField(null=True, default=None)
     aggregate_retention = FloatField(null=True, default=None)
     aggregate_limit = FloatField(null=True, default=None)
 
-    def type_name(self) -> str:
+    def type_string(self) -> str:
         return "Excess Of Loss"
+
+    def get_absolute_url(self) -> str:
+        return reverse("xl-risk", args=[str(self.pk)])
 
     def limit_retention_string(self) -> str:
         if self.risk_retention is not None:
@@ -19,7 +21,7 @@ class ExcessOfLoss(Coverage):
         return "no risk retention"
 
     def __repr__(self):
-        return self.type_name()
+        return self.type_string()
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -30,10 +32,6 @@ class ExcessOfLoss(Coverage):
             l.append(("Risk retention", "{:_}".format(self.risk_retention)))
         if self.risk_limit is not None:
             l.append(("Risk limit", "{:_}".format(self.risk_limit)))
-        if self.event_retention is not None:
-            l.append(("Event retention", "{:_}".format(self.event_retention)))
-        if self.event_limit is not None:
-            l.append(("Event limit", "{:_}".format(self.event_limit)))
         if self.aggregate_retention is not None:
             l.append(("Aggregate retention", "{:_}".format(self.aggregate_retention)))
         if self.aggregate_limit is not None:

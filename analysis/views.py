@@ -1,13 +1,16 @@
 from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
-
+from analysis.models.contract.BaseContract import BaseContract
+from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
+from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
+from analysis.models.contract.QuotaShare import QuotaShare
 from analysis.forms import ContractForm, CreateConvolution
-from analysis.models.Company import Company
-from analysis.models.Contract import Contract
-from analysis.models.Convolution import convolve, plot_empirical_distribution
+from analysis.models.reference_value.Company import Company
+from analysis.functions.Convolution import convolve_all
 from analysis.models.ExposureAnalysis import ExposureAnalysis
-from analysis.models.LossDistribution import LossDistribution, EmpiricalDistribution
-from analysis.models.Program import Program
+from analysis.models.LossDistribution import EmpiricalDistribution, LossDistribution
+from analysis.functions.Plot import plot_empirical_distribution
+from analysis.models.contract.Program import Program
 
 
 def create_contract(request):
@@ -21,8 +24,20 @@ def create_contract(request):
     return render(request, "analysis/create_contract.html", {"form": form})
 
 
-class ContractDetailView(DetailView):
-    model = Contract
+class QuotaShareDetailView(DetailView):
+    model = QuotaShare
+    context_object_name = "object"
+    template_name = "base_detail.html"
+
+
+class ExcessOfLossRiskDetailView(DetailView):
+    model = ExcessOfLossRisk
+    context_object_name = "object"
+    template_name = "base_detail.html"
+
+
+class ExcessOfLossEventDetailView(DetailView):
+    model = ExcessOfLossEvent
     context_object_name = "object"
     template_name = "base_detail.html"
 
@@ -40,7 +55,7 @@ class CompanyDetailView(DetailView):
 
 
 class ContractsListView(ListView):
-    model = Contract
+    model = BaseContract
     paginate_by = 20
     context_object_name = "object_list"
     template_name = "base_list.html"
@@ -92,7 +107,7 @@ class ExposureAnalysisDetailView(DetailView):
 
     def get_context_data(self, **kwargs: any) -> dict[str, any]:  # type: ignore
         context = super().get_context_data(**kwargs)
-        context["image_path"] = f"media/plot_{self.object.code}.png" # type: ignore
+        context["image_path"] = f"media/plot_{self.object.code}.png"  # type: ignore
         return context
 
 
@@ -116,7 +131,7 @@ def exposure_analysis_edit(request, pk):
         if form.is_valid():
             if form.cleaned_data["function"] == "create_convolution":
                 lds = LossDistribution.objects.filter(analysis=model_obj)
-                sample = convolve(list(lds))
+                sample = convolve_all(list(lds))
                 EmpiricalDistribution.objects.create(
                     analysis=model_obj, sample=sample, is_total_distribution=True
                 )

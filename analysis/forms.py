@@ -1,8 +1,8 @@
 from django import forms
 
-from analysis.models.ExcessOfLoss import ExcessOfLoss
-from analysis.models.Premium import Premium
-from analysis.models.QuotaShare import QuotaShare
+from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
+from analysis.models.contract.Premium import Premium
+from analysis.models.contract.QuotaShare import QuotaShare
 
 
 class ContractForm(forms.Form):
@@ -21,9 +21,9 @@ class PremiumForm(forms.ModelForm):
         fields = '__all__'
 
 
-class ExcessOfLossForm(forms.ModelForm):
+class ExcessOfLossRiskForm(forms.ModelForm):
     class Meta:
-        model = ExcessOfLoss
+        model = ExcessOfLossRisk
         fields = '__all__'
 
 

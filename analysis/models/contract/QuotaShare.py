@@ -1,15 +1,19 @@
-from analysis.models.Coverage import Coverage
+from analysis.models.contract.BaseContract import BaseContract
 from django.db.models import FloatField
+from django.urls import reverse
 
 
-class QuotaShare(Coverage):
+class QuotaShare(BaseContract):
     share = FloatField(default=1)
 
-    def type_name(self) -> str:
+    def type_string(self) -> str:
         return "Quota Share"
+    
+    def get_absolute_url(self) -> str:
+        return reverse("quota-share", args=[str(self.pk)])
 
     def __repr__(self):
-        return self.type_name()
+        return self.type_string()
 
     def __str__(self) -> str:
         return self.__repr__()

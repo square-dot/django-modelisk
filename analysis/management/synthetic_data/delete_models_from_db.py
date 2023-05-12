@@ -1,17 +1,22 @@
-from analysis.models.Company import Company
-from analysis.models.Contract import Contract
-from analysis.models.Country import Country
-from analysis.models.Currency import Currency
-from analysis.models.ExcessOfLoss import ExcessOfLoss
-from analysis.models.Expenses import Expenses
-from analysis.models.InflationPattern import InflationPattern
-from analysis.models.Premium import Premium
-from analysis.models.QuotaShare import QuotaShare
-from analysis.models.Program import Program
-from analysis.models.Code import Code
+from analysis.models.reference_value.Code import Code
+from analysis.models.reference_value.Company import Company
+from analysis.models.contract.BaseContract import BaseContract
+from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
+from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
+from analysis.models.contract.QuotaShare import QuotaShare
+from analysis.models.reference_value.Country import Country
+from analysis.models.reference_value.Currency import Currency
 from analysis.models.ExposureAnalysis import ExposureAnalysis
-from analysis.models.Reinstatement import Reinstatement
-from analysis.models.LossDistribution import GammaDistribution, ParetoDistribution, EmpiricalDistribution
+from analysis.models.InflationPattern import InflationPattern
+from analysis.models.LossDistribution import (
+    EmpiricalDistribution,
+    GammaDistribution,
+    ParetoDistribution,
+)
+from analysis.models.contract.Premium import Premium
+from analysis.models.contract.Program import Program
+from analysis.models.contract.Reinstatement import Reinstatement
+
 
 def empty_database_from_analysis():
     for c in (
@@ -23,24 +28,22 @@ def empty_database_from_analysis():
     ):
         c.objects.all().delete()
 
+
 def empty_database():
     empty_database_from_analysis()
     for c in (
         ExposureAnalysis,
         InflationPattern,
-        Contract,
+        BaseContract,
         Program,
         QuotaShare,
         Reinstatement,
-        ExcessOfLoss,
+        ExcessOfLossRisk,
+        ExcessOfLossEvent,
         Premium,
-        Expenses,
         Company,
         Code,
         Country,
         Currency,
     ):
         c.objects.all().delete()
-
-
-

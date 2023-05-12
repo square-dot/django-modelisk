@@ -1,6 +1,6 @@
 from analysis.models.InflationPattern import InflationPattern
-from analysis.models.Program import Program
-from analysis.models.Code import Code
+from analysis.models.contract.Program import Program
+from analysis.models.reference_value.Code import Code
 from django.db.models import PROTECT, CharField, ForeignKey, Model, OneToOneField
 from django.urls import reverse
 
