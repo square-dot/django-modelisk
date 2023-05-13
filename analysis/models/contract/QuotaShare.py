@@ -13,10 +13,13 @@ class QuotaShare(BaseContract):
         return reverse("quota-share", args=[str(self.pk)])
 
     def __repr__(self):
-        return self.type_string()
+        return f"{self.code}"
 
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_fields(self) -> list[tuple[str, str]]:
-        return [("Share", "{:.0f}%".format(self.share * 100))]
+    def get_fields(self) -> list[tuple[str, str, str]]:
+        l = self.get_base_fields()
+        l.insert(0, ("Code", "", self.code))
+        l.append(("Share", "", "{:.0f}%".format(self.share * 100)))
+        return l

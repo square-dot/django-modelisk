@@ -10,7 +10,7 @@ class ExcessOfLossEvent(BaseExcessOfLoss):
     aggregate_limit = FloatField(null=True, default=None)
 
     def type_string(self) -> str:
-        return "Excess Of Loss"
+        return "Excess Of Loss Event"
     
     def get_absolute_url(self) -> str:
         return reverse("xl-event", args=[str(self.pk)])
@@ -21,22 +21,23 @@ class ExcessOfLossEvent(BaseExcessOfLoss):
         return "no event retention"
 
     def __repr__(self):
-        return self.type_name()
+        return f"{self.code}"
 
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_fields(self) -> list[tuple[str, str]]:
-        l = []
+    def get_fields(self) -> list[tuple[str, str, str]]:
+        l = self.get_base_fields()
+        l.insert(0, ("Code", "", self.code))
         if self.event_retention is not None:
-            l.append(("Event retention", "{:_}".format(self.event_retention)))
+            l.append(("Event retention", "", "{:_}".format(self.event_retention)))
         if self.event_limit is not None:
-            l.append(("Event limit", "{:_}".format(self.event_limit)))
+            l.append(("Event limit", "", "{:_}".format(self.event_limit)))
         if self.aggregate_retention is not None:
-            l.append(("Aggregate retention", "{:_}".format(self.aggregate_retention)))
+            l.append(("Aggregate retention", "", "{:_}".format(self.aggregate_retention)))
         if self.aggregate_limit is not None:
-            l.append(("Aggregate limit", "{:_}".format(self.aggregate_limit)))
+            l.append(("Aggregate limit", "", "{:_}".format(self.aggregate_limit)))
         for reinstatement in self.reinstatement_set.all():
-            l.append((f"Reinstatement {reinstatement.nr}", "Size {:.0f}% - Cost {:.0f}%".format(reinstatement.size * 100, reinstatement.cost * 100)))
+            l.append((f"Reinstatement {reinstatement.nr}", "", "Size {:.0f}% - Cost {:.0f}%".format(reinstatement.size * 100, reinstatement.cost * 100)))
         return l
     

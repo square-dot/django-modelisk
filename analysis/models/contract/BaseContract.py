@@ -20,7 +20,7 @@ class BaseContract(PolymorphicModel):
         return "Contract"
 
     def __repr__(self) -> str:
-        return f"{self.code} {self.type_string()}"
+        return f"{self.code}"
 
     def __str__(self) -> str:
         return self.__repr__()

@@ -48,7 +48,7 @@ class Program(Model):
             (
                 "",
                 contract.get_absolute_url(),
-                f"{contract.code} - {contract.coverage.type_name()}",
+                f"{contract.code} - {contract}",
             )
             for contract in self.basecontract_set.all() # type: ignore
         ]

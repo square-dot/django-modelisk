@@ -10,7 +10,7 @@ class ExcessOfLossRisk(BaseExcessOfLoss):
     aggregate_limit = FloatField(null=True, default=None)
 
     def type_string(self) -> str:
-        return "Excess Of Loss"
+        return "Excess Of Loss Risk"
 
     def get_absolute_url(self) -> str:
         return reverse("xl-risk", args=[str(self.pk)])
@@ -21,22 +21,23 @@ class ExcessOfLossRisk(BaseExcessOfLoss):
         return "no risk retention"
 
     def __repr__(self):
-        return self.type_string()
+        return f"{self.code}"
 
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_fields(self) -> list[tuple[str, str]]:
-        l = []
+    def get_fields(self) -> list[tuple[str, str, str]]:
+        l = self.get_base_fields()
+        l.insert(0, ("Code", "", self.code))
         if self.risk_retention is not None:
-            l.append(("Risk retention", "{:_}".format(self.risk_retention)))
+            l.append(("Risk retention", "", "{:_}".format(self.risk_retention)))
         if self.risk_limit is not None:
-            l.append(("Risk limit", "{:_}".format(self.risk_limit)))
+            l.append(("Risk limit", "", "{:_}".format(self.risk_limit)))
         if self.aggregate_retention is not None:
-            l.append(("Aggregate retention", "{:_}".format(self.aggregate_retention)))
+            l.append(("Aggregate retention", "", "{:_}".format(self.aggregate_retention)))
         if self.aggregate_limit is not None:
-            l.append(("Aggregate limit", "{:_}".format(self.aggregate_limit)))
+            l.append(("Aggregate limit", "", "{:_}".format(self.aggregate_limit)))
         for reinstatement in self.reinstatement_set.all():
-            l.append((f"Reinstatement {reinstatement.nr}", "Size {:.0f}% - Cost {:.0f}%".format(reinstatement.size * 100, reinstatement.cost * 100)))
+            l.append((f"Reinstatement {reinstatement.nr}", "", "Size {:.0f}% - Cost {:.0f}%".format(reinstatement.size * 100, reinstatement.cost * 100)))
         return l
     
