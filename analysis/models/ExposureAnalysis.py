@@ -1,5 +1,6 @@
 from analysis.models.InflationPattern import InflationPattern
 from analysis.models.contract.Program import Program
+from analysis.models.RiskProfile import RiskProfile
 from analysis.models.reference_value.Code import Code
 from django.db.models import PROTECT, CharField, ForeignKey, Model, OneToOneField
 from django.urls import reverse
@@ -9,7 +10,8 @@ class ExposureAnalysis(Model):
     code = OneToOneField(Code, on_delete=PROTECT, default=Code.next_analysis_code)
     name = CharField(max_length=256)
     inflation_pattern = ForeignKey(InflationPattern, on_delete=PROTECT, null=True)
-    program = ForeignKey(Program, on_delete=PROTECT)
+    program = ForeignKey(Program, on_delete=PROTECT, null=True)
+    risk_profile = ForeignKey(RiskProfile, on_delete=PROTECT, null=True)
 
     def __str__(self):
         return f"{self.code} {self.name}"

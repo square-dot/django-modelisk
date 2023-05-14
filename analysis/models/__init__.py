@@ -13,3 +13,5 @@ from .contract import Premium
 from .contract import Program
 from .contract import QuotaShare
 from .contract import Reinstatement
+from . import Risk
+from . import RiskProfile
