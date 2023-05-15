@@ -11,6 +11,7 @@ from analysis.models.ExposureAnalysis import ExposureAnalysis
 from analysis.models.LossDistribution import EmpiricalDistribution, LossDistribution
 from analysis.functions.Plot import plot_empirical_distribution
 from analysis.models.contract.Program import Program
+from analysis.models.reference_value.Code import Code
 
 
 def create_contract(request):
@@ -46,6 +47,11 @@ class ProgramDetailView(DetailView):
     model = Program
     context_object_name = "object"
     template_name = "base_detail.html"
+
+    def get_object(self, queryset=None):
+        code = self.kwargs.get('code')
+        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        return self.model.objects.get(code=my_code)
 
 
 class CompanyDetailView(DetailView):

@@ -1,6 +1,6 @@
 from analysis.models.reference_value.Code import Code
 from analysis.models.reference_value.Company import Company
-from analysis.models.contract.BaseContract import BaseContract
+from analysis.models.contract.BaseContract import BaseContract, BaseExcessOfLoss
 from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
 from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
 from analysis.models.contract.QuotaShare import QuotaShare
@@ -35,6 +35,7 @@ def empty_database():
         ExposureAnalysis,
         InflationPattern,
         BaseContract,
+        BaseExcessOfLoss,
         Program,
         QuotaShare,
         Reinstatement,

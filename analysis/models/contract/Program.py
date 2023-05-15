@@ -19,7 +19,7 @@ class Program(Model):
         return "Program"
 
     def get_absolute_url(self):
-        return reverse("program-detail", args=[str(self.pk)])
+        return reverse("program-detail", args=[str(self.code)])
 
     def __repr__(self) -> str:
         return f"{self.code} {self.insured}"

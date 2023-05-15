@@ -1,10 +1,11 @@
-from analysis.models.contract.BaseContract import BaseContract
-from django.db.models import FloatField
+from analysis.models.contract.BaseContract import BaseContract, BaseExcessOfLoss
+from django.db.models import FloatField, CharField
 from django.urls import reverse
 
 
 class QuotaShare(BaseContract):
     share = FloatField(default=1)
+
 
     def type_string(self) -> str:
         return "Quota Share"
