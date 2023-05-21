@@ -30,6 +30,15 @@ class Code(Model):
         prefix = "A"
         return Code.create_next_code(prefix)
     
+    @staticmethod
+    def next_risk_profile_code():
+        prefix = "R"
+        return Code.create_next_code(prefix)
+    
+    @staticmethod
+    def get_code(code_string):
+        return Code.objects.filter(alphabetic_code=code_string[0]).get(numeric_code=int(code_string[1:]))
+    
     def __str__(self):
         return f"{self.alphabetic_code}{str(self.numeric_code).zfill(5)}"
     

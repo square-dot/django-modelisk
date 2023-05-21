@@ -41,7 +41,7 @@ class ExposureAnalysis(Model):
         return fields
 
     def get_absolute_url(self):
-        return reverse("exposure-analysis-detail", args=[str(self.pk)])
+        return reverse("exposure-analysis-detail", args=[str(self.code)])
     
     def has_total_distribution(self) -> bool:
         return any(self.lossdistribution_set.filter(is_total_distribution=True)) # type: ignore

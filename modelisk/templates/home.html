@@ -10,9 +10,13 @@
 <ul>
     <li><a href="{% url 'programs' %}">List of programs</a></li>
     <li><a href="{% url 'contracts' %}">List of contracts</a></li>
-    <li><a href="{% url 'companies' %}">List of companies</a></li>
     <li><a href="{% url 'exposure-analysis' %}">List of exposure analysis</a></li>
-    <li><a href="{% url 'create-contract' %}">Create an insurance contract</a></li>
+    <li><a href="{% url 'risk-profiles' %}">List of risk profiles</a></li>
+    <li><a href="{% url 'contract-creation' %}">Create an insurance contract</a></li>
     <li><a href="{% url 'experience-analysis-creation' %}">Start a CLM analysis</a></li>
+</ul>
+<h2>Reference values:</h2>
+<ul>
+    <li><a href="{% url 'companies' %}">List of companies</a></li>
 </ul>
 {% endblock %}
