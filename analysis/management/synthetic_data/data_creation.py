@@ -17,7 +17,8 @@ from analysis.models.contract.Reinstatement import Reinstatement
 from analysis.models.reference_value.Classification import Classification
 from analysis.models.RiskProfile import RiskProfile
 from analysis.models.Risk import Risk
-
+from analysis.models.LossProfile import LossProfile
+from analysis.models.Loss import Loss
 
 class ContractsCreation:
     @staticmethod
@@ -31,6 +32,8 @@ class ContractsCreation:
             ContractsCreation.create_contracts(random.choice(currencies), program)
         for _ in programs:
             ContractsCreation.create_risk_profile()
+        for _ in programs:
+            ContractsCreation.create_loss_profile()
 
     @staticmethod
     def create_countries() -> list[Country]:
@@ -176,4 +179,14 @@ class ContractsCreation:
                 tag_1=random.choices(("Europe", "Africa")),
                 tag_2=random.choices(("private building", "public building")),
                 tag_3=random.choices(("small", "big")),
+            )
+
+    @staticmethod
+    def create_loss_profile():
+        lp = LossProfile.objects.create(name="test_loss_profile")
+        for i in range(30):
+            Loss.objects.create(
+                loss_profile=lp,
+                name=f"test_loss_{i}",
+                size=random.normalvariate(1_000, 300),
             )

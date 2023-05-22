@@ -13,6 +13,7 @@ from analysis.functions.Plot import plot_empirical_distribution
 from analysis.models.contract.Program import Program
 from analysis.models.reference_value.Code import Code
 from analysis.models.RiskProfile import RiskProfile
+from analysis.models.LossProfile import LossProfile
 
 
 def create_contract(request):
@@ -128,6 +129,18 @@ class RiskProfilesListView(ListView):
         context["object_name"] = "Risk profile"
         context["object_plural_name"] = "Risk profiles"
         return context
+    
+class LossProfilesListView(ListView):
+    model = LossProfile
+    paginate_by = 20
+    context_object_name = "object_list"
+    template_name = "base_list.html"
+
+    def get_context_data(self, **kwargs: any) -> dict[str, any]:  # type: ignore
+        context = super().get_context_data(**kwargs)
+        context["object_name"] = "Risk profile"
+        context["object_plural_name"] = "Risk profiles"
+        return context
 
 class RiskProfileDetailView(DetailView):
     model = RiskProfile
@@ -139,6 +152,16 @@ class RiskProfileDetailView(DetailView):
         my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
         return self.model.objects.get(code=my_code)
 
+class LossProfileDetailView(DetailView):
+    model = LossProfile
+    context_object_name = "object"
+    template_name = "base_detail.html"
+
+    def get_object(self, queryset=None):
+        code = self.kwargs.get('code')
+        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        return self.model.objects.get(code=my_code)
+    
 def experience_analysis(request):
     return render(request, "analysis/experience_analysis_creation.html")
 

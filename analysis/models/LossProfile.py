@@ -3,8 +3,8 @@ from analysis.models.reference_value.Code import Code
 from django.urls import reverse
 
 
-class RiskProfile(Model):
-    code = OneToOneField(Code, on_delete=PROTECT, default=Code.next_risk_profile_code)
+class LossProfile(Model):
+    code = OneToOneField(Code, on_delete=PROTECT, default=Code.next_loss_profile_code)
     name = CharField(max_length=256)
 
     def __str__(self):
@@ -12,10 +12,10 @@ class RiskProfile(Model):
     
     @staticmethod
     def type_string():
-        return "Risk profile"
+        return "Loss profile"
 
     def get_absolute_url(self):
-        return reverse("risk-profile-detail", args=[str(self.code)])
+        return reverse("loss-profile-detail", args=[str(self.code)])
 
     def get_base_fields(self):
         return [

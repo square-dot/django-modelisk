@@ -15,3 +15,5 @@ from .contract import QuotaShare
 from .contract import Reinstatement
 from . import Risk
 from . import RiskProfile
+from . import Loss
+from . import LossProfile

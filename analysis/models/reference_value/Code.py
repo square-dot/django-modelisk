@@ -36,6 +36,11 @@ class Code(Model):
         return Code.create_next_code(prefix)
     
     @staticmethod
+    def next_loss_profile_code():
+        prefix = "L"
+        return Code.create_next_code(prefix)
+    
+    @staticmethod
     def get_code(code_string):
         return Code.objects.filter(alphabetic_code=code_string[0]).get(numeric_code=int(code_string[1:]))
     
