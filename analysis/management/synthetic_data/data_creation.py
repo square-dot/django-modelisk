@@ -176,9 +176,9 @@ class ContractsCreation:
                 quantity=random.randint(1, 4),
                 expected_maximal_loss=10_000_000,
                 expected_average_loss=1_000_000,
-                tag_1=random.choices(("Europe", "Africa")),
-                tag_2=random.choices(("private building", "public building")),
-                tag_3=random.choices(("small", "big")),
+                tag_1=random.choice(("Europe", "Africa")),
+                tag_2=random.choice(("private building", "public building")),
+                tag_3=random.choice(("small", "big")),
             )
 
     @staticmethod
@@ -189,4 +189,5 @@ class ContractsCreation:
                 loss_profile=lp,
                 name=f"test_loss_{i}",
                 size=random.normalvariate(1_000, 300),
+                period = random.randint(1, 30),
             )

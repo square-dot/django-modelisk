@@ -25,6 +25,8 @@ class RiskProfile(Model):
     def get_fields(self):
         fields = self.get_base_fields()
         fields.insert(0, ("Code", "", self.code))
+        for risk in self.risk_set.all():
+            fields.append(("Risk", "", risk))
         return fields
 
     def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore

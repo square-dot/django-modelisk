@@ -1,6 +1,6 @@
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 from analysis.models.InflationPattern import InflationPattern
-from analysis.models.LossDistribution import (
+from analysis.models.ProbabilityDistribution import (
     EmpiricalDistribution,
     GammaDistribution,
     ParetoDistribution,

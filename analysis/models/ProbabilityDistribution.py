@@ -1,11 +1,12 @@
-from analysis.models.ExposureAnalysis import ExposureAnalysis
-from polymorphic.models import PolymorphicModel
-from django.db.models import PROTECT, BooleanField, FloatField, ForeignKey, JSONField
-from scipy.stats import pareto, gamma
 import matplotlib.pyplot as plt
+from django.db.models import PROTECT, BooleanField, FloatField, ForeignKey, JSONField
+from polymorphic.models import PolymorphicModel
+from scipy.stats import gamma, pareto
+
+from analysis.models.ExposureAnalysis import ExposureAnalysis
 
 
-class LossDistribution(PolymorphicModel):
+class ProbabilityDistribution(PolymorphicModel):
     GAMMA = "gamma"
     PARETO = "pareto"
     ECDF = "ecdf"
@@ -31,7 +32,7 @@ class LossDistribution(PolymorphicModel):
         unique_together = [("analysis", "is_total_distribution")]
 
 
-class ParetoDistribution(LossDistribution):
+class ParetoDistribution(ProbabilityDistribution):
     alpha = FloatField()
     threshold = FloatField()
 
@@ -50,7 +51,7 @@ class ParetoDistribution(LossDistribution):
         )
 
 
-class GammaDistribution(LossDistribution):
+class GammaDistribution(ProbabilityDistribution):
     shape = FloatField()
     rate = FloatField()
 
@@ -69,7 +70,7 @@ class GammaDistribution(LossDistribution):
         )
 
 
-class EmpiricalDistribution(LossDistribution):
+class EmpiricalDistribution(ProbabilityDistribution):
     sample = JSONField(null=False)
 
     def type_string(self):

@@ -1,9 +1,11 @@
-from analysis.models.LossDistribution import LossDistribution
 import math
+
+from analysis.models.ProbabilityDistribution import ProbabilityDistribution
+
 # from scipy.fft import ff
 
 
-def convolve_all(distributions: list[LossDistribution]): #-> dict[int, float]:
+def convolve_all(distributions: list[ProbabilityDistribution]): #-> dict[int, float]:
     first = distributions[0]
     conv = []
     for d in distributions[1:]:

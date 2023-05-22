@@ -8,7 +8,7 @@ from .contract import ExcessOfLossRisk
 from .contract import ExcessOfLossEvent
 from . import ExposureAnalysis
 from . import InflationPattern
-from . import LossDistribution
+from . import ProbabilityDistribution
 from .contract import Premium
 from .contract import Program
 from .contract import QuotaShare

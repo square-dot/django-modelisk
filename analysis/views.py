@@ -1,19 +1,21 @@
 from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
-from analysis.models.contract.BaseContract import BaseContract
-from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
-from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
-from analysis.models.contract.QuotaShare import QuotaShare
+
 from analysis.forms import ContractForm, CreateConvolution
-from analysis.models.reference_value.Company import Company
 from analysis.functions.Convolution import convolve_all
-from analysis.models.ExposureAnalysis import ExposureAnalysis
-from analysis.models.LossDistribution import EmpiricalDistribution, LossDistribution
 from analysis.functions.Plot import plot_empirical_distribution
+from analysis.models.contract.BaseContract import BaseContract
+from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
+from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
 from analysis.models.contract.Program import Program
-from analysis.models.reference_value.Code import Code
-from analysis.models.RiskProfile import RiskProfile
+from analysis.models.contract.QuotaShare import QuotaShare
+from analysis.models.ExposureAnalysis import ExposureAnalysis
+from analysis.models.ProbabilityDistribution import (EmpiricalDistribution,
+                                              ProbabilityDistribution)
 from analysis.models.LossProfile import LossProfile
+from analysis.models.reference_value.Code import Code
+from analysis.models.reference_value.Company import Company
+from analysis.models.RiskProfile import RiskProfile
 
 
 def create_contract(request):
@@ -201,7 +203,7 @@ def exposure_analysis_edit(request, pk):
         form = CreateConvolution(request.POST)
         if form.is_valid():
             if form.cleaned_data["function"] == "create_convolution":
-                lds = LossDistribution.objects.filter(analysis=model_obj)
+                lds = ProbabilityDistribution.objects.filter(analysis=model_obj)
                 sample = convolve_all(list(lds))
                 EmpiricalDistribution.objects.create(
                     analysis=model_obj, sample=sample, is_total_distribution=True
