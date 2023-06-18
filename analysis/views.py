@@ -10,8 +10,10 @@ from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
 from analysis.models.contract.Program import Program
 from analysis.models.contract.QuotaShare import QuotaShare
 from analysis.models.ExposureAnalysis import ExposureAnalysis
-from analysis.models.ProbabilityDistribution import (EmpiricalDistribution,
-                                              ProbabilityDistribution)
+from analysis.models.ProbabilityDistribution import (
+    EmpiricalDistribution,
+    ProbabilityDistribution,
+)
 from analysis.models.LossProfile import LossProfile
 from analysis.models.reference_value.Code import Code
 from analysis.models.reference_value.Company import Company
@@ -35,8 +37,10 @@ class QuotaShareDetailView(DetailView):
     template_name = "base_detail.html"
 
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.objects.filter(alphabetic_code=code[0]).get(
+            numeric_code=int(code[1:])
+        )
         return self.model.objects.get(code=my_code)
 
 
@@ -46,8 +50,10 @@ class ExcessOfLossRiskDetailView(DetailView):
     template_name = "base_detail.html"
 
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.objects.filter(alphabetic_code=code[0]).get(
+            numeric_code=int(code[1:])
+        )
         return self.model.objects.get(code=my_code)
 
 
@@ -57,8 +63,10 @@ class ExcessOfLossEventDetailView(DetailView):
     template_name = "base_detail.html"
 
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.objects.filter(alphabetic_code=code[0]).get(
+            numeric_code=int(code[1:])
+        )
         return self.model.objects.get(code=my_code)
 
 
@@ -68,8 +76,10 @@ class ProgramDetailView(DetailView):
     template_name = "base_detail.html"
 
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.objects.filter(alphabetic_code=code[0]).get(
+            numeric_code=int(code[1:])
+        )
         return self.model.objects.get(code=my_code)
 
 
@@ -120,6 +130,7 @@ class ProgramsListView(ListView):
         context["object_plural_name"] = "Programs"
         return context
 
+
 class RiskProfilesListView(ListView):
     model = RiskProfile
     paginate_by = 20
@@ -131,7 +142,8 @@ class RiskProfilesListView(ListView):
         context["object_name"] = "Risk profile"
         context["object_plural_name"] = "Risk profiles"
         return context
-    
+
+
 class LossProfilesListView(ListView):
     model = LossProfile
     paginate_by = 20
@@ -144,15 +156,17 @@ class LossProfilesListView(ListView):
         context["object_plural_name"] = "Risk profiles"
         return context
 
+
 class RiskProfileDetailView(DetailView):
     model = RiskProfile
     context_object_name = "object"
     template_name = "base_detail.html"
 
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.get_code(code)
         return self.model.objects.get(code=my_code)
+
 
 class LossProfileDetailView(DetailView):
     model = LossProfile
@@ -160,10 +174,11 @@ class LossProfileDetailView(DetailView):
     template_name = "base_detail.html"
 
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.get_code(code)
         return self.model.objects.get(code=my_code)
-    
+
+
 def experience_analysis(request):
     return render(request, "analysis/experience_analysis_creation.html")
 
@@ -172,15 +187,48 @@ class ExposureAnalysisDetailView(DetailView):
     model = ExposureAnalysis
     context_object_name = "exposureanalysis"
     template_name = "analysis/exposure_analysis_detail.html"
+    convolution_form = CreateConvolution
+
+    def post(self, request, code, *args, **kwargs):
+        form = self.convolution_form(request.POST)
+        my_code = Code.get_code(code)
+        model_obj = ExposureAnalysis.objects.get(code=my_code)
+        if form.is_valid():
+            my_code = Code.get_code(code)
+            if form.cleaned_data["function"] == "create_convolution" \
+                and not any(EmpiricalDistribution.objects.filter(analysis=model_obj).filter(is_total_distribution=True)):
+                lds = ProbabilityDistribution.objects.filter(analysis=model_obj)
+                sample = convolve_all(list(lds))
+                EmpiricalDistribution.objects.create(
+                    analysis=model_obj,
+                    sample=sample,
+                    is_total_distribution=True,
+                )
+                _ = plot_empirical_distribution(sample, anlysis_code=model_obj.code)
+            else:
+                print(form.cleaned_data["function"])
+        else:
+            print(form.errors.as_data())
+        context = {
+            "exposureanalysis": model_obj,
+            "form": CreateConvolution(
+                initial={"function": "create_convolution"},
+            ),
+            "image_path": f"media/plot_{ model_obj.code}.png",
+        }
+        return render(
+            request, "analysis/exposure_analysis_detail.html", context=context
+        )
 
     def get_context_data(self, **kwargs: any) -> dict[str, any]:  # type: ignore
         context = super().get_context_data(**kwargs)
-        context["image_path"] = f"media/plot_{self.object.code}.png"  # type: ignore
+        context["form"] = CreateConvolution(initial={"function": "create_convolution"})
+        context["image_path"] = f"media/plot_{self.object.code}.png" # type: ignore
         return context
-    
+
     def get_object(self, queryset=None):
-        code = self.kwargs.get('code')
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(numeric_code=int(code[1:]))
+        code = self.kwargs.get("code")
+        my_code = Code.get_code(code)
         return self.model.objects.get(code=my_code)
 
 
@@ -196,34 +244,14 @@ class ExposureAnalysisListView(ListView):
         context["object_plural_name"] = "Exposure Analysis"
         return context
 
+def reference_data(request):
+    return render(request, "analysis/reference_data.html")
 
-def exposure_analysis_edit(request, pk):
-    if request.method == "POST":
-        model_obj = ExposureAnalysis.objects.get(pk=pk)
-        form = CreateConvolution(request.POST)
-        if form.is_valid():
-            if form.cleaned_data["function"] == "create_convolution":
-                lds = ProbabilityDistribution.objects.filter(analysis=model_obj)
-                sample = convolve_all(list(lds))
-                EmpiricalDistribution.objects.create(
-                    analysis=model_obj, sample=sample, is_total_distribution=True
-                )
-                _ = plot_empirical_distribution(sample, anlysis_code=model_obj.code)
-            else:
-                print(form.cleaned_data["function"])
-        else:
-            print(form.errors.as_data())
-        context = {
-            "exposureanalysis": model_obj,
-            "form": CreateConvolution(
-                initial={"function": "create_convolution"},
-            ),
-        }
-        return render(request, "analysis/exposure_analysis_edit.html", context=context)
-    else:
-        model_obj = ExposureAnalysis.objects.get(pk=pk)
-        context = {
-            "exposureanalysis": model_obj,
-            "form": CreateConvolution(initial={"function": "create_convolution"}),
-        }
-        return render(request, "analysis/exposure_analysis_edit.html", context=context)
+def business_data(request):
+    return render(request, "analysis/business_data.html")
+
+def analysis(request):
+    all_analysis = ExposureAnalysis.objects.all().order_by("-last_modified")
+    recent = all_analysis[0:5]
+
+    return render(request, "analysis/analysis_list.html", {"analysis_list": all_analysis, "recent": recent})

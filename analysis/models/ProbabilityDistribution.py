@@ -77,7 +77,7 @@ class EmpiricalDistribution(ProbabilityDistribution):
         return "Empirical distribution"
 
     def cdf(self, x):
-        return NotImplementedError("ppf of ecdf still to define")
+        return NotImplementedError("cdf of ecdf still to define")
 
     def ppf(self, x):
         return NotImplementedError("ppf of ecdf still to define")

@@ -1,9 +1,10 @@
-from django.db.models import PROTECT, FloatField, ForeignKey, OneToOneField
+from django.db.models import PROTECT, FloatField, ForeignKey, OneToOneField, DateTimeField
 from polymorphic.models import PolymorphicModel
 from analysis.models.reference_value.Code import Code
 from analysis.models.reference_value.Currency import Currency
 from analysis.models.contract.Premium import Premium
 from analysis.models.contract.Program import Program
+from datetime import datetime
 
 
 class BaseContract(PolymorphicModel):
@@ -14,6 +15,8 @@ class BaseContract(PolymorphicModel):
     commission = FloatField(default=0)
     program = ForeignKey(Program, on_delete=PROTECT)
     participation = FloatField(help_text="percentage share acquired")
+    creation_date = DateTimeField(default=datetime.now)
+    last_modified = DateTimeField(default=datetime.now)
 
     @staticmethod
     def type_string():

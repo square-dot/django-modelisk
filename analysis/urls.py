@@ -18,5 +18,7 @@ urlpatterns = [
     path("experience-analysis", views.experience_analysis, name="experience-analysis-creation"),
     path("exposure-analysis-detail/<str:code>", views.ExposureAnalysisDetailView.as_view(), name="exposure-analysis-detail"),
     path("exposure-analysis", views.ExposureAnalysisListView.as_view(), name="exposure-analysis"),
-    path("exposure-analysis-edit/<str:code>", views.exposure_analysis_edit, name="exposure-analysis-edit"),
+    path("reference-data", views.reference_data, name="reference-data"),
+    path("business-data", views.business_data, name="business-data"),
+    path("analysis", views.analysis, name="analysis-list"),
 ]

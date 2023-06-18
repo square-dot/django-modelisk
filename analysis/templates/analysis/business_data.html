@@ -1,0 +1,12 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Insurance Risk Modeling{% endblock %}
+
+{% block content %}
+<h2>Business data</h2>
+<ul>
+    <li><a href="{% url 'programs' %}">List of programs</a></li>
+    <li><a href="{% url 'contracts' %}">List of contracts</a></li>
+    <li><a href="{% url 'companies' %}">List of companies</a></li>
+</ul>
+{% endblock %}

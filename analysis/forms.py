@@ -32,6 +32,7 @@ class QuotaShareForm(forms.ModelForm):
         model = QuotaShare
         fields = '__all__'
 
+
 class CreateConvolution(forms.Form):
-    function = forms.CharField(max_length=256, widget=forms.HiddenInput())
+    function = forms.CharField(max_length=256, widget=forms.HiddenInput(), initial={"function": "create_convolution"})
 

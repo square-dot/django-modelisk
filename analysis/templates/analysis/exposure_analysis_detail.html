@@ -16,7 +16,11 @@
 <img src="{% static image_path %}" alt="Plot Image">
 {% else %}
 The total convolution has not yet been calculated.
-{% endif %}
 <br/>
-<a href="{% url 'exposure-analysis-edit' exposureanalysis.id %}">Edit</a>
+<form method="POST" action="{% url 'exposure-analysis-detail' exposureanalysis.code %}">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Create convolution</button>
+</form>
+{% endif %}
 {% endblock %}

@@ -2,8 +2,9 @@ from analysis.models.reference_value.Company import Company
 from analysis.models.reference_value.Currency import Currency
 from analysis.models.reference_value.Code import Code
 from analysis.models.reference_value.Classification import Classification
-from django.db.models import PROTECT, DateField, ForeignKey, Model, OneToOneField
+from django.db.models import PROTECT, DateField, ForeignKey, Model, OneToOneField, DateTimeField
 from django.urls import reverse
+from datetime import datetime
 
 
 class Program(Model):
@@ -13,6 +14,8 @@ class Program(Model):
     line_of_business = ForeignKey(Classification, on_delete=PROTECT)
     start_date = DateField()
     end_date = DateField()
+    creation_date = DateTimeField(default=datetime.now)
+    last_modified = DateTimeField(default=datetime.now)
 
     @staticmethod
     def type_string():
