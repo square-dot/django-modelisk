@@ -1,13 +1,22 @@
 from django.urls import path
+
 from . import views
 
+#list of models
 urlpatterns = [
-    path("contract-creation/", views.create_contract, name="contract-creation"),
     path("contracts/", views.ContractsListView.as_view(), name="contracts"),
     path("companies/", views.CompaniesListView.as_view(), name="companies"),
     path("programs/", views.ProgramsListView.as_view(), name="programs"),
     path("risk-profiles/", views.RiskProfilesListView.as_view(), name="risk-profiles"),
     path("loss-profiles/", views.LossProfilesListView.as_view(), name="loss-profiles"),
+    path("reference-data", views.reference_data, name="reference-data"),
+    path("business-data", views.business_data, name="business-data"),
+    path("analysis", views.analysis, name="analysis-list"),
+]
+
+#details views
+urlpatterns.extend((
+    path("program/<str:code>/", views.ProgramDetailView.as_view(), name="program-detail"),
     path("quotashare/<str:code>", views.QuotaShareDetailView.as_view(), name="quota-share"),
     path("excessoflossrisk/<str:code>", views.ExcessOfLossRiskDetailView.as_view(), name="xl-risk"),
     path("excessoflossevent/<str:code>", views.ExcessOfLossEventDetailView.as_view(), name="xl-event"),
@@ -15,10 +24,11 @@ urlpatterns = [
     path("program/<str:code>/", views.ProgramDetailView.as_view(), name="program-detail"),
     path("risk-profile/<str:code>/", views.RiskProfileDetailView.as_view(), name="risk-profile-detail"),
     path("loss-profile/<str:code>/", views.LossProfileDetailView.as_view(), name="loss-profile-detail"),
-    path("experience-analysis", views.experience_analysis, name="experience-analysis-creation"),
-    path("exposure-analysis-detail/<str:code>", views.ExposureAnalysisDetailView.as_view(), name="exposure-analysis-detail"),
-    path("exposure-analysis", views.ExposureAnalysisListView.as_view(), name="exposure-analysis"),
-    path("reference-data", views.reference_data, name="reference-data"),
-    path("business-data", views.business_data, name="business-data"),
-    path("analysis", views.analysis, name="analysis-list"),
-]
+    path("exposure-analysis/<str:code>", views.ExposureAnalysisDetailView.as_view(), name="exposure-analysis-detail"),
+))
+
+#creation views
+urlpatterns.extend((
+    path("contract-creation/", views.contract_creation, name="contract-creation"),
+    path("experience-analysis-creation", views.experience_analysis_creation, name="experience-analysis-creation"),
+))
