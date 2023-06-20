@@ -28,7 +28,7 @@ def contract_creation(request):
     else:
         form = ContractForm()
 
-    return render(request, "analysis/create_contract.html", {"form": form})
+    return render(request, "analysis/contract_creation.html", {"form": form})
 
 
 class QuotaShareDetailView(DetailView):

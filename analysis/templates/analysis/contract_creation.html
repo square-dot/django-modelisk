@@ -10,10 +10,11 @@
             <td>
                 <label for="{{ field.id_for_label }}" class="col-form-label">{{ field.label }}</label>
             </td>
-            <td>{{ field }}</td>
-            {% endfor %}
+            <td>{{ field }} {{ field.errors }}</td>
         </tr>
+        {% endfor %}
+
     </tbody>
 </table>
-<button type="submit" class="btn btn-primary">Submit</button>
+<form action="/your-name/" method="post"><button type="submit" class="btn btn-primary">Submit</button></form>
 {% endblock %}
