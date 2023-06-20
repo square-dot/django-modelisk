@@ -4,7 +4,6 @@
 <h1>Create a contract</h1>
 <table>
     <tbody>
-        {% csrf_token %}
         {% for field in form %}
         <tr>
             <td>
@@ -16,5 +15,8 @@
 
     </tbody>
 </table>
-<form action="/your-name/" method="post"><button type="submit" class="btn btn-primary">Submit</button></form>
+<form action="{% url 'contracts' %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 {% endblock %}

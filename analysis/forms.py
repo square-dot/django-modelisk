@@ -6,6 +6,7 @@ from analysis.models.reference_value.Company import Company
 from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
 from analysis.models.contract.Premium import Premium
 from analysis.models.contract.QuotaShare import QuotaShare
+from analysis.models.ExposureAnalysis import ExposureAnalysis
 
 
 class ContractForm(forms.Form):
@@ -16,8 +17,6 @@ class ContractForm(forms.Form):
     retention = forms.FloatField(validators=[MinValueValidator(0.0)],)
     aggregate_limit = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
     reinstatements = forms.IntegerField(validators=[MinValueValidator(0)], required=False)
-
-
 
 
 class PremiumForm(forms.ModelForm):
@@ -40,4 +39,9 @@ class QuotaShareForm(forms.ModelForm):
 
 class CreateConvolution(forms.Form):
     function = forms.CharField(max_length=256, widget=forms.HiddenInput(), initial={"function": "create_convolution"})
+
+class ExposureAnalysisForm(forms.ModelForm):
+    class Meta:
+        model = ExposureAnalysis
+        fields = '__all__'
 

@@ -5,14 +5,14 @@
 <table>
     <tbody>
         {% csrf_token %}
+        {% for field in form %}
         <tr>
-            {% for field in form %}
             <td>
                 <label for="{{ field.id_for_label }}" class="col-form-label">{{ field.label }}</label>
             </td>
             <td>{{ field }}</td>
-            {% endfor %}
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 <button type="submit" class="btn btn-primary">Submit</button>

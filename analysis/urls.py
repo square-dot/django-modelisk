@@ -31,4 +31,6 @@ urlpatterns.extend((
 urlpatterns.extend((
     path("contract-creation/", views.contract_creation, name="contract-creation"),
     path("experience-analysis-creation", views.experience_analysis_creation, name="experience-analysis-creation"),
+    path("exposure-analysis-creation", views.exposure_analysis_creation, name="exposure-analysis-creation"),
+
 ))

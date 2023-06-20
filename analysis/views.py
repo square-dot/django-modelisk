@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
 
-from analysis.forms import ContractForm, CreateConvolution
+from analysis.forms import ContractForm, CreateConvolution, ExposureAnalysisForm
 from analysis.functions.Convolution import convolve_all
 from analysis.functions.Plot import plot_empirical_distribution
 from analysis.models.contract.BaseContract import BaseContract
@@ -81,7 +81,7 @@ class ProgramDetailView(DetailView):
             numeric_code=int(code[1:])
         )
         return self.model.objects.get(code=my_code)
-
+    
 
 class CompanyDetailView(DetailView):
     model = Company
@@ -181,6 +181,16 @@ class LossProfileDetailView(DetailView):
 
 def experience_analysis_creation(request):
     return render(request, "analysis/experience_analysis_creation.html")
+
+def exposure_analysis_creation(request):
+    if request.method == "POST":
+        form = ExposureAnalysisForm(request.POST)
+        if form.is_valid():
+            return redirect("contracts")
+    else:
+        form = ExposureAnalysisForm()
+
+    return render(request, "analysis/exposure_analysis_creation.html", {"form": form})
 
 
 class ExposureAnalysisDetailView(DetailView):
