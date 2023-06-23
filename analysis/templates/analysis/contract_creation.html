@@ -2,21 +2,84 @@
 
 {% block content %}
 <h1>Create a contract</h1>
-<table>
-    <tbody>
-        {% for field in form %}
-        <tr>
-            <td>
-                <label for="{{ field.id_for_label }}" class="col-form-label">{{ field.label }}</label>
-            </td>
-            <td>{{ field }} {{ field.errors }}</td>
-        </tr>
-        {% endfor %}
 
-    </tbody>
-</table>
 <form action="{% url 'contracts' %}" method="post">
+    {{ form.contract_type }}
+    <div>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <label for="{{ form.insured.id_for_label }}" class="col-form-label">Insured:</label>
+                    </td>
+                    <td>
+                        {{ form.insured }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="{{ form.participation.id_for_label }}" class="col-form-label">Participation:</label>
+                    </td>
+                    <td>{{ form.participation }}
+                    </td>
+                </tr>
+                <tr id="share_line" style="display:none;">
+                    <td>
+                        <label for="{{ form.share.id_for_label }}" class="col-form-label">Share:</label>
+                    </td>
+                    <td>{{ form.share }}
+                    </td>
+                </tr>
+                <tr id="risk_limit_line" style="display:none;">
+                    <td>
+                        <label for="{{ form.risk_limit.id_for_label }}" class="col-form-label">Risk limit:</label>
+                    </td>
+                    <td>{{ form.risk_limit }} xs {{ form.risk_retention }}
+                    </td>
+                </tr>
+                <tr id="event_limit_line" style="display:none;">
+                    <td>
+                        <label for="{{ form.event_limit.id_for_label }}" class="col-form-label">Event limit:</label>
+                    </td>
+                    <td>{{ form.event_limit }} xs {{ form.event_retention }}
+                    </td>
+                </tr>
+                <tr id="aggregate_limit_line" style="display:none;">
+                    <td>
+                        <label for="{{ form.aggregate_limit.id_for_label }}" class="col-form-label">Aggregate
+                            limit:</label>
+                    </td>
+                    <td>{{ form.aggregate_limit }} xs {{ form.aggregate_retention }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<script>
+    function change_visible_elements() {
+        var radio_elements = document.getElementsByName("contract_type");
+        if (Array.from(radio_elements).find(radio => radio.checked).value == "risk") {
+            document.getElementById("risk_limit_line").style.display = "table-row";
+            document.getElementById("event_limit_line").style.display = "none";
+            document.getElementById("aggregate_limit_line").style.display = "table-row";
+            document.getElementById("share").style.display = "none";
+
+        }
+        else if (Array.from(radio_elements).find(radio => radio.checked).value == "event") {
+            document.getElementById("risk_limit_line").style.display = "none";
+            document.getElementById("event_limit_line").style.display = "table-row";
+            document.getElementById("aggregate_limit_line").style.display = "table-row";
+            document.getElementById("share").style.display = "none";
+        }
+        else if (Array.from(radio_elements).find(radio => radio.checked).value == "share") {
+            document.getElementById("risk_limit_line").style.display = "none";
+            document.getElementById("event_limit_line").style.display = "none";
+            document.getElementById("aggregate_limit_line").style.display = "none";
+            document.getElementById("share").style.display = "table-row";
+        }
+    }
+    document.getElementById("id_contract_type").addEventListener("click", change_visible_elements);
+</script>
 {% endblock %}

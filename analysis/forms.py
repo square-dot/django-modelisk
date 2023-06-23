@@ -11,11 +11,15 @@ from analysis.models.ExposureAnalysis import ExposureAnalysis
 
 class ContractForm(forms.Form):
     insured = forms.ChoiceField(choices=[(c, c.name) for c in Company.objects.order_by("name")])
-    contract_type = forms.ChoiceField(choices=[('risk', 'Risk XL'), ('event', 'Event XL'), ('share', 'QS')])
-    share = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],)
-    limit = forms.FloatField(validators=[MinValueValidator(0.0)],)
-    retention = forms.FloatField(validators=[MinValueValidator(0.0)],)
+    contract_type = forms.ChoiceField(widget=forms.RadioSelect, choices=[('risk', 'Risk XL'), ('event', 'Event XL'), ('share', 'QS')])
+    participation = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],)
+    share = forms.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(1.0)], required=False)
+    risk_limit = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
+    risk_retention = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
+    event_limit = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
+    event_retention = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
     aggregate_limit = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
+    aggregate_retention = forms.FloatField(validators=[MinValueValidator(0.0)], required=False)
     reinstatements = forms.IntegerField(validators=[MinValueValidator(0)], required=False)
 
 
