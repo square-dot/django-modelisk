@@ -21,6 +21,11 @@ class Code(Model):
         return Code.create_next_code(prefix)
     
     @staticmethod
+    def next_layer_code():
+        prefix = "L"
+        return Code.create_next_code(prefix)
+    
+    @staticmethod
     def next_contract_code():
         prefix = "C"
         return Code.create_next_code(prefix)
@@ -37,7 +42,7 @@ class Code(Model):
     
     @staticmethod
     def next_loss_profile_code():
-        prefix = "L"
+        prefix = "S"
         return Code.create_next_code(prefix)
     
     @staticmethod
@@ -49,5 +54,3 @@ class Code(Model):
     
     class Meta:
         unique_together = [('alphabetic_code', 'numeric_code')]
-
-    

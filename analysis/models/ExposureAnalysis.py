@@ -1,6 +1,8 @@
+from typing import Any
 from analysis.models.InflationPattern import InflationPattern
 from analysis.models.contract.Program import Program
 from analysis.models.RiskProfile import RiskProfile
+from analysis.models.RiskProfileModel import RiskProfileModel
 from analysis.models.reference_value.Code import Code
 from django.db.models import PROTECT, CharField, ForeignKey, Model, OneToOneField, DateTimeField
 from django.urls import reverse
@@ -13,6 +15,7 @@ class ExposureAnalysis(Model):
     inflation_pattern = ForeignKey(InflationPattern, on_delete=PROTECT, null=True)
     program = ForeignKey(Program, on_delete=PROTECT, null=True)
     risk_profile = ForeignKey(RiskProfile, on_delete=PROTECT, null=True)
+    risk_profile_model = ForeignKey(RiskProfileModel, on_delete=PROTECT, null=True)
     creation_date = DateTimeField(default=datetime.now)
     last_modified = DateTimeField(default=datetime.now)
 
@@ -23,29 +26,29 @@ class ExposureAnalysis(Model):
     def type_string():
         return "Analysis"
     
-    def get_base_fields(self):
+    def get_absolute_url(self):
+        return reverse("exposure-analysis-detail", args=[str(self.code)])
+    
+    def get_base_fields(self) -> list[tuple[str, str, Any]]:
         return [
             ("Name", "", self.name),
-            ("Program", self.program.get_absolute_url(), self.program),
+            ("Program", "" if self.program is None else self.program.get_absolute_url(), self.program),
         ]
     
-    def get_fields(self):
+    def get_fields_for_detail(self) -> list[tuple[str, str, Any]]:
         fields = self.get_base_fields()
         fields.insert(0, ("Code", "", self.code))
-        for ld in self.probabilitydistribution_set.filter(is_total_distribution=False): # type: ignore
-            fields.append(("Distribution", "", ld))
-        if self.has_total_distribution():
-            fields.append(("Total distribution", "", self.probabilitydistribution_set.get(is_total_distribution=True))) # type: ignore
+        if self.program is not None:
+            fields.append(("Program", self.program.get_absolute_url(), self.program))
+        else:
+            fields.append(("Program", "", ""))
         return fields
     
-    def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
+    def get_fields_for_list(self) -> list[tuple[str, str, Any]]:
         fields = self.get_base_fields()
         fields.insert(0, ("Code", self.get_absolute_url(), self.code))
         return fields
 
-    def get_absolute_url(self):
-        return reverse("exposure-analysis-detail", args=[str(self.code)])
-    
     def has_total_distribution(self) -> bool:
         return any(self.probabilitydistribution_set.filter(is_total_distribution=True)) # type: ignore
     

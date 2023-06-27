@@ -4,7 +4,7 @@ from . import views
 
 #list of models
 urlpatterns = [
-    path("contracts/", views.ContractsListView.as_view(), name="contracts"),
+    path("contracts/", views.LayersListView.as_view(), name="contracts"),
     path("companies/", views.CompaniesListView.as_view(), name="companies"),
     path("programs/", views.ProgramsListView.as_view(), name="programs"),
     path("risk-profiles/", views.RiskProfilesListView.as_view(), name="risk-profiles"),
@@ -17,9 +17,7 @@ urlpatterns = [
 #details views
 urlpatterns.extend((
     path("program/<str:code>/", views.ProgramDetailView.as_view(), name="program-detail"),
-    path("quotashare/<str:code>", views.QuotaShareDetailView.as_view(), name="quota-share"),
-    path("excessoflossrisk/<str:code>", views.ExcessOfLossRiskDetailView.as_view(), name="xl-risk"),
-    path("excessoflossevent/<str:code>", views.ExcessOfLossEventDetailView.as_view(), name="xl-event"),
+    path("layer/<str:code>", views.LayerDetailView.as_view(), name="layer"),
     path("company/<int:pk>", views.CompanyDetailView.as_view(), name="company-detail"),
     path("program/<str:code>/", views.ProgramDetailView.as_view(), name="program-detail"),
     path("risk-profile/<str:code>/", views.RiskProfileDetailView.as_view(), name="risk-profile-detail"),

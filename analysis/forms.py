@@ -1,11 +1,10 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 from analysis.models.reference_value.Company import Company
+from analysis.models.contract.Layer import Layer
 
 
-from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
 from analysis.models.contract.Premium import Premium
-from analysis.models.contract.QuotaShare import QuotaShare
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 
 
@@ -29,20 +28,15 @@ class PremiumForm(forms.ModelForm):
         fields = '__all__'
 
 
-class ExcessOfLossRiskForm(forms.ModelForm):
+class LayerForm(forms.ModelForm):
     class Meta:
-        model = ExcessOfLossRisk
-        fields = '__all__'
-
-
-class QuotaShareForm(forms.ModelForm):
-    class Meta:
-        model = QuotaShare
+        model = Layer
         fields = '__all__'
 
 
 class CreateConvolution(forms.Form):
     function = forms.CharField(max_length=256, widget=forms.HiddenInput(), initial={"function": "create_convolution"})
+
 
 class ExposureAnalysisForm(forms.ModelForm):
     class Meta:

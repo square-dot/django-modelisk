@@ -6,9 +6,7 @@ from analysis.management.synthetic_data.insurance_name_generator import (
     test_insurance_data_generator,
 )
 from analysis.models.reference_value.Company import Company
-from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
-from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
-from analysis.models.contract.QuotaShare import QuotaShare
+from analysis.models.contract.Layer import Layer
 from analysis.models.reference_value.Country import Country
 from analysis.models.reference_value.Currency import Currency
 from analysis.models.contract.Premium import Premium
@@ -19,6 +17,7 @@ from analysis.models.RiskProfile import RiskProfile
 from analysis.models.Risk import Risk
 from analysis.models.LossProfile import LossProfile
 from analysis.models.Loss import Loss
+from analysis.models.contract.Expenses import Expenses
 
 class ContractsCreation:
     @staticmethod
@@ -118,32 +117,30 @@ class ContractsCreation:
         brokerage = max(
             round(random.normalvariate(mu=magnitude / 20, sigma=magnitude / 40), 2), 0
         )
-        commission = max(
+        expenses = Expenses.objects.create(upfront_expenses=max(
             round(random.normalvariate(mu=magnitude / 30, sigma=magnitude / 60), 2), 0
-        )
+        ))
         share = max(round(random.random(), 4), 0)
         participation = max(0, round(random.random(), 2))
         match contract_type:
             case "QS":
-                QuotaShare.objects.create(
+                Layer.objects.create(
                     program=program,
                     currency=currency,
                     premium=premium,
-                    brokerage=brokerage,
-                    commission=commission,
                     participation=participation,
                     share=share,
+                    expenses=expenses,
                 )
             case "XL_Risk":
                 retention = max(round(random.normalvariate(mu=magnitude), rounding), 0)
                 limit = max(round(random.normalvariate(mu=magnitude), rounding), 0)
-                ExcessOfLossRisk.objects.create(
+                Layer.objects.create(
                     program=program,
                     currency=currency,
                     premium=premium,
-                    brokerage=brokerage,
-                    commission=commission,
                     participation=participation,
+                    expenses=expenses,
                     risk_retention=retention,
                     risk_limit=limit,
                     aggregate_retention=None,
@@ -152,13 +149,12 @@ class ContractsCreation:
             case "XL_Event":
                 retention = max(round(random.normalvariate(mu=magnitude), rounding), 0)
                 limit = max(round(random.normalvariate(mu=magnitude), rounding), 0)
-                c = ExcessOfLossEvent.objects.create(
+                c = Layer.objects.create(
                     program=program,
                     currency=currency,
                     premium=premium,
-                    brokerage=brokerage,
-                    commission=commission,
                     participation=participation,
+                    expenses=expenses,
                     event_retention=retention,
                     event_limit=limit,
                     aggregate_retention=None,

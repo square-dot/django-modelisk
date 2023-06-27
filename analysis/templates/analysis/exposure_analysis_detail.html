@@ -4,7 +4,7 @@
 <h1>{{ exposureanalysis.type_string }} {{ exposureanalysis }}</h1>
 
 <table>
-    {% for label, url, value in exposureanalysis.get_fields %}
+    {% for label, url, value in exposureanalysis.get_fields_for_detail %}
         <tr>
             <td>{{ label }}</td>
             <td>{% if url %}<a href="{{ url }}">{% endif%}{{ value }}{% if url %}</a>{% endif%}</td>

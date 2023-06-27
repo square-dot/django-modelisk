@@ -4,7 +4,7 @@
 <h1>{{ object.type_string }} {{ object }}</h1>
 
 <table>
-    {% for label, url, value in object.get_fields %}
+    {% for label, url, value in object.get_fields_for_detail %}
         <tr>
             <td>{{ label }}</td>
             <td>{% if url %}<a href="{{ url }}">{% endif%}{{ value }}{% if url %}</a>{% endif%}</td>

@@ -1,3 +1,4 @@
+from typing import Any
 from analysis.models.reference_value.Company import Company
 from analysis.models.reference_value.Currency import Currency
 from analysis.models.reference_value.Code import Code
@@ -35,30 +36,30 @@ class Program(Model):
             return ("Code", self.get_absolute_url(), self.code)
         return ("Code", "", self.code)
 
-    def get_base_fields(self):
+    def get_base_fields(self) -> list[tuple[str, str, Any]]:
         return [
             ("Insured", self.insured.get_absolute_url(), self.insured),
             ("Start date", "", self.start_date),
             ("End date", "", self.end_date),
             ("Currency", "", self.currency),
-            ("Nr of contracts", "", self.basecontract_set.all().count()), # type: ignore
+            ("Nr of layers", "", self.layer_set.all().count()), # type: ignore
         ]
 
-    def get_fields(self) -> list[tuple[str, str, any]]:  # type: ignore
+    def get_fields_for_detail(self) -> list[tuple[str, str, Any]]: 
         fields = self.get_base_fields()
         fields.insert(0, ("Code", "", self.code))
-        contracts = [
+        layers = [
             (
                 "",
-                contract.get_absolute_url(),
-                f"{contract.code} - {contract}",
+                layer.get_absolute_url(),
+                f"{layer}",
             )
-            for contract in self.basecontract_set.all() # type: ignore
+            for layer in self.layer_set.all() # type: ignore
         ]
-        fields.extend(contracts)
+        fields.extend(layers)
         return fields
 
-    def get_fields_for_list(self) -> list[tuple[str, str, any]]:  # type: ignore
+    def get_fields_for_list(self) -> list[tuple[str, str, Any]]:
         fields = self.get_base_fields()
         fields.insert(0, ("Code", self.get_absolute_url(), self.code))
         return fields

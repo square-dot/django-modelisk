@@ -4,11 +4,8 @@ from django.views.generic import DetailView, ListView
 from analysis.forms import ContractForm, CreateConvolution, ExposureAnalysisForm
 from analysis.functions.Convolution import convolve_all
 from analysis.functions.Plot import plot_empirical_distribution
-from analysis.models.contract.BaseContract import BaseContract
-from analysis.models.contract.ExcessOfLossEvent import ExcessOfLossEvent
-from analysis.models.contract.ExcessOfLossRisk import ExcessOfLossRisk
+from analysis.models.contract.Layer import Layer
 from analysis.models.contract.Program import Program
-from analysis.models.contract.QuotaShare import QuotaShare
 from analysis.models.ExposureAnalysis import ExposureAnalysis
 from analysis.models.LossProfile import LossProfile
 from analysis.models.ProbabilityDistribution import (
@@ -31,34 +28,8 @@ def contract_creation(request):
     return render(request, "analysis/contract_creation.html", {"form": form})
 
 
-class QuotaShareDetailView(DetailView):
-    model = QuotaShare
-    context_object_name = "object"
-    template_name = "base_detail.html"
-
-    def get_object(self, queryset=None):
-        code = self.kwargs.get("code")
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(
-            numeric_code=int(code[1:])
-        )
-        return self.model.objects.get(code=my_code)
-
-
-class ExcessOfLossRiskDetailView(DetailView):
-    model = ExcessOfLossRisk
-    context_object_name = "object"
-    template_name = "base_detail.html"
-
-    def get_object(self, queryset=None):
-        code = self.kwargs.get("code")
-        my_code = Code.objects.filter(alphabetic_code=code[0]).get(
-            numeric_code=int(code[1:])
-        )
-        return self.model.objects.get(code=my_code)
-
-
-class ExcessOfLossEventDetailView(DetailView):
-    model = ExcessOfLossEvent
+class LayerDetailView(DetailView):
+    model = Layer
     context_object_name = "object"
     template_name = "base_detail.html"
 
@@ -89,8 +60,8 @@ class CompanyDetailView(DetailView):
     template_name = "base_detail.html"
 
 
-class ContractsListView(ListView):
-    model = BaseContract
+class LayersListView(ListView):
+    model = Layer
     paginate_by = 20
     context_object_name = "object_list"
     template_name = "base_list.html"

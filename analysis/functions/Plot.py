@@ -2,7 +2,6 @@ import os
 
 import matplotlib.pyplot as plt
 
-from analysis.models.contract.BaseContract import BaseContract
 from analysis.models.ProbabilityDistribution import EmpiricalDistribution
 from modelisk.settings import BASE_DIR
 
